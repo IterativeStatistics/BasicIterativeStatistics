@@ -5,7 +5,7 @@ import numpy as np
 import logging
 logger = logging.getLogger("my-logger")
 
-from src.abstract_iterative_statistcs import AbstractIterativeStatistics
+from iterative_stats.abstract_iterative_statistcs import AbstractIterativeStatistics
 
 
 

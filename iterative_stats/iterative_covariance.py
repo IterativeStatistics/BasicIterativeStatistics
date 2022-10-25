@@ -2,9 +2,9 @@ from typing import Dict
 import numpy as np
 import copy
 
-from src.abstract_iterative_statistcs import AbstractIterativeStatistics
-from src.iterative_mean import IterativeMean
-from src.utils.logger import logger 
+from iterative_stats.abstract_iterative_statistics import AbstractIterativeStatistics
+from iterative_stats.iterative_mean import IterativeMean
+from iterative_stats.utils.logger import logger 
 
 class IterativeCovariance(AbstractIterativeStatistics):
     def __init__(self, conf: Dict):

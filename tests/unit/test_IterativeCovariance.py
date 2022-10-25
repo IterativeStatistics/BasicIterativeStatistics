@@ -3,8 +3,8 @@ import numpy as np
 
 
 
-from src.iterative_covariance import IterativeCovariance
-from src.utils.logger import logger
+from iterative_stats.iterative_covariance import IterativeCovariance
+from iterative_stats.utils.logger import logger
 
 class TestCov:
     def __init__(self, sample_1, sample_2):

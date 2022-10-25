@@ -3,8 +3,8 @@ import numpy as np
 
 
 
-from src.iterative_extrema import IterativeExtrema
-from src.utils.logger import logger
+from iterative_stats.iterative_extrema import IterativeExtrema
+from iterative_stats.utils.logger import logger
 
 
 class TestAbstractIterativeStatistics(unittest.TestCase):

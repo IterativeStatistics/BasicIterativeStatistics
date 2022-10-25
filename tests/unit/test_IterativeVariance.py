@@ -2,8 +2,8 @@ import unittest
 import numpy as np
 
 
-from src.iterative_variance import IterativeVariance
-from src.utils.logger import logger
+from iterative_stats.iterative_variance import IterativeVariance
+from iterative_stats.utils.logger import logger
 
 
 class TestIterativeVariance(unittest.TestCase):

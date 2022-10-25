@@ -3,7 +3,7 @@ import numpy as np
 
 
 
-from src.iterative_mean import IterativeMean
+from iterative_stats.iterative_mean import IterativeMean
 
 
 

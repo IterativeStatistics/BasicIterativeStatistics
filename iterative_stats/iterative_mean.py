@@ -1,5 +1,5 @@
-from src.abstract_iterative_statistcs import AbstractIterativeStatistics
-from src.utils.logger import logger 
+from iterative_stats.abstract_iterative_statistics import AbstractIterativeStatistics
+from iterative_stats.utils.logger import logger 
 
 class IterativeMean(AbstractIterativeStatistics):
 
