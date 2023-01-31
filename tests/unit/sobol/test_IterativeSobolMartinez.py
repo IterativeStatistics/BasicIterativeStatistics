@@ -1,99 +1,98 @@
-from random import sample
 import unittest
 import copy 
 
 import numpy as np
 import openturns as ot
-from iterative_stats.sobol.sobol_martinez import IterativeSobol
-from experimental_design.experiment import AbstractExperiment
+from iterative_stats.sobol.sobol_martinez import IterativeMartinezSobol
 
 import logging
 logging.getLogger('matplotlib').setLevel(logging.WARNING)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
-# TODO: 
-#   - Tester avec les fonctions ishigami
-#   - Tester avec OpenTurns
 
-class PickFreeze(AbstractExperiment):
-    def __init__(self, conf) -> None:  
-        nb_parms = conf.get('nb_parms')
-        self.numpy_sample_C = [np.zeros(self.sample_size) for _ in range(nb_parms)]
-        self.numpy_sample_B = np.zeros(self.sample_size)  
-        distribution = ot.ComposedDistribution([ot.Uniform(-1.0, 1.0)] * 3) 
-        self.inputDesign = ot.SobolIndicesExperiment(distribution, self.sample_size).generate() 
-        formula = [conf.get('formula')]
-        self.model = ot.SymbolicFunction(['X1', 'X2', 'X3'], formula)
-        self.cpt = 0
+class Pearson:
+    def __init__(self, nb_parms, nb_sim = 1):
+        self.data_A = np.array([])
+        self.data_B = np.array([])
+        self.data_E = np.array([]*nb_parms)
+        self.nb_parms = nb_parms
+        self.nb_sim = nb_sim
 
-    def draw(self) :
-        
-        # Apply the pick-freeze approach
+    def _compute_pearson(self, data_1, data_2):
+        pearson = np.empty(self.nb_parms)
+        for p in range(self.nb_parms) :
+            cov = np.cov(data_1, data_2[:,p])[0][1]
+            pearson[p] = cov / (np.std(data_1, ddof=1)*np.std(data_2[:,p], ddof=1))
+        return pearson
 
-        sample_A = self.inputDesign[2*self.cpt]
-        sample_B = self.inputDesign[2*self.cpt + 1]
-        y_C = []
-        for k in range(self.nb_parms):
-            sample_Ck = copy.deepcopy(sample_A)  
-            sample_Ck[k] = sample_B[k]
-            y_C.append(self.model(sample_Ck)[0])
-            self.numpy_sample_C[k][self.cpt] = self.model(sample_Ck)[0]
-        self.numpy_sample_B[self.cpt] = self.model(sample_B)[0]
-        return 
+    def increment(self, sample):
+        if self.data_B.size == 0 and self.data_E.size == 0 :
+            self.data_A = sample[:self.nb_sim]
+            self.data_B = sample[self.nb_sim:2*self.nb_sim]
+            self.data_E = sample[2*self.nb_sim:]
+        else :
+            self.data_A = np.append(self.data_A, sample[:self.nb_sim])
+            self.data_B = np.append(self.data_B, sample[self.nb_sim:2*self.nb_sim])
+            self.data_E = np.vstack((self.data_E, sample[2*self.nb_sim:]))
 
-class TestIterativeCovariance(unittest.TestCase):
-
-
-    # @classmethod
-    # def setUp(self):
+        if self.data_B.size > 1 :
+            return {'first_order' : self._compute_pearson(self.data_B, self.data_E),
+                    'total_order' : 1 - self._compute_pearson(self.data_A, self.data_E)
+                    }
+        else :
+            return None 
 
 
+class TestIterativeSobolMartinez(unittest.TestCase):
 
     def test_ishigami_ot(self):
         # Draw samples A and B (here A = (X1, X2, X3), where X1, X2 et X3 are iid and follows a Unif[a,b])
         nb_parms = 3
-        sobol = IterativeSobol({'vector_size' :1, 'nb_parms':nb_parms})
-        nb_sim = 3
+        sobol = IterativeMartinezSobol({'vector_size' :1, 'nb_parms':nb_parms})
+        nb_sim = 10
 
         # Create the model and input distribution
         formula = ['sin(pi_*X1)+7*sin(pi_*X2)^2+0.1*(pi_*X3)^4*sin(pi_*X1)']
         model = ot.SymbolicFunction(['X1', 'X2', 'X3'], formula)
         distribution = ot.ComposedDistribution([ot.Uniform(-1.0, 1.0)] * 3)
-        dimension = distribution.getDimension()
         ot.RandomGenerator.SetSeed(0)
         inputDesign = ot.SobolIndicesExperiment(distribution, nb_sim).generate()
         outputDesign = model(inputDesign)
-        logger.info(f'input size : {inputDesign}')
+
+        check_pearson = Pearson(nb_parms = nb_parms)
 
         # Check the iterative algorithm
         # -- Apply the pick-freeze approach
-        numpy_sample_C = [np.zeros(nb_sim) for _ in range(nb_parms)]
-        numpy_sample_B = np.zeros(nb_sim)
         for i in range(nb_sim):
             sample_A = inputDesign[i]
             sample_B = inputDesign[nb_sim + i]
-            
-            y_C = []
+            sample = np.vstack(([outputDesign[i]], [outputDesign[nb_sim + i]]))
             for k in range(nb_parms):
                 sample_Ck = copy.deepcopy(sample_A)  
                 sample_Ck[k] = sample_B[k]
-                logger.info(f'sample CK: {sample_Ck}')
-                y_C.append(model(sample_Ck)[0])
-            
-            sobol.increment(np.array(outputDesign[i]), y_C)
-        logger.info(f'Sobol iterative: {sobol.get_stats()}')
+                sample = np.append(sample, model(sample_Ck)[0])
 
-        # logger.info(f'Sobol numpy ------------')
-        # np_sobol = np.zeros(nb_parms)
-        # for k in range(nb_parms):
-        #     prod_var = np.var(numpy_sample_B,ddof=1)*np.var(numpy_sample_C[k],ddof=1)
-        #     np_sobol[k] = np.cov(numpy_sample_B, numpy_sample_C[k])[0][1]/np.sqrt(prod_var)
-        # logger.info(f'Sobol numpy: {np_sobol}')
+            logger.info(f'sample: {sample}')
+            sobol.increment(sample)
+            pearson = check_pearson.increment(sample)
+            logger.info(f'Sobol iterative: first = {sobol.getFirstOrderSobol()}, tot = {sobol.getTotalOrderSobol()}')
+            logger.info(f'Sobol pearson : {pearson}')
 
-        # Compute first order indices using the Martinez estimator
+            if pearson is not None :
+                first_order = sobol.getFirstOrderSobol()
+                total_order = sobol.getTotalOrderSobol()
+                for p in range(nb_parms):
+                    # check first order
+                    self.assertAlmostEqual(pearson.get('first_order')[p], first_order[p], delta=10e-10)
+                    # check total order
+                    self.assertAlmostEqual(pearson.get('total_order')[p], total_order[p], delta=10e-10)
+                   
+       
         sensitivityAnalysis = ot.MartinezSensitivityAlgorithm(inputDesign, outputDesign, nb_sim)
-        first_order = sensitivityAnalysis.getFirstOrderIndices()
-        logger.info(f'Sobol openturns: first order {first_order}')
-        total_order = sensitivityAnalysis.getTotalOrderIndices()
-        logger.info(f'Sobol openturns: total order {total_order}')
+        ot_first_order = sensitivityAnalysis.getFirstOrderIndices()
+        ot_total_order = sensitivityAnalysis.getTotalOrderIndices()
+        logger.info(f'Sobol openturns: first = {ot_first_order}, total order {ot_total_order}')
+        for p in range(nb_parms):
+            self.assertAlmostEqual(ot_first_order[p], first_order[p], delta=10e-10)
+            self.assertAlmostEqual(total_order[p], ot_total_order[p], delta=10e-10)
