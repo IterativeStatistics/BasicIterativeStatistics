@@ -19,6 +19,7 @@ numpy = "^1.19.0"
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.1"
 autopep8 = "1.6.0"
+openturns = "1.19"
 
 
 [build-system]
