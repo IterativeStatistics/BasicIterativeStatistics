@@ -9,6 +9,52 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
+class Pearson:
+    def __init__(self, nb_parms, nb_sim = 1):
+        self.data_A = np.array([])
+        self.data_B = np.array([])
+        self.data_E = np.array([]*nb_parms)
+        self.nb_parms = nb_parms
+        self.nb_sim = nb_sim
+        self.iteration = 0
+
+    def _compute_dotproduct(self, data_1, data_2):
+        vec = []
+        for p in range(self.nb_parms):
+            vec.append(np.dot(data_2[:,p]-data_1, data_2[:,p]-data_1)/(2*self.iteration - 1))
+        return np.array(vec)
+
+    def _compute_centeredsquare(self, data):
+        vec = []
+        for p in range(self.nb_parms):
+            vec.append(np.dot(data, data))
+        return np.array(vec)/(self.iteration - 1)
+
+    def increment(self, sample):
+        self.iteration += 1
+        if self.data_B.size == 0 and self.data_E.size == 0 :
+            self.data_A = sample[:self.nb_sim]
+            self.data_B = sample[self.nb_sim:2*self.nb_sim]
+            self.data_E = sample[2*self.nb_sim:]
+        else :
+            self.data_A = np.append(self.data_A, sample[:self.nb_sim])
+            self.data_B = np.append(self.data_B, sample[self.nb_sim:2*self.nb_sim])
+            self.data_E = np.vstack((self.data_E, sample[2*self.nb_sim:]))
+
+        if self.iteration > 1 :
+            full_sample = np.append(self.data_A, self.data_B)
+            full_sample = np.append(full_sample, self.data_E)
+            var = np.var(self.data_A, ddof = 1)
+            logger.info(f'var= {var}, mean= {np.mean(full_sample)}')
+            vi_first_order = self._compute_centeredsquare(self.data_A- np.mean(full_sample))
+            vi_first_order -= self._compute_dotproduct(self.data_B - np.mean(full_sample), self.data_E- np.mean(full_sample))
+
+            vi_total_order = self._compute_dotproduct(self.data_A - np.mean(full_sample), self.data_E - np.mean(full_sample))
+            return {'first_order' : vi_first_order/var,
+                    'total_order' : vi_total_order/var
+                    }
+        else :
+            return None 
 
 class TestIterativeSobolJansen(unittest.TestCase):
 
@@ -26,6 +72,7 @@ class TestIterativeSobolJansen(unittest.TestCase):
         inputDesign = ot.SobolIndicesExperiment(distribution, nb_sim).generate()
         outputDesign = model(inputDesign)
 
+        check = Pearson(nb_parms = nb_parms)
 
         # Check the iterative algorithm
         # -- Apply the pick-freeze approach
@@ -40,7 +87,9 @@ class TestIterativeSobolJansen(unittest.TestCase):
 
             sobol.increment(sample)
             logger.info(f'Sobol iterative: first = {sobol.getFirstOrderSobol()}, tot = {sobol.getTotalOrderSobol()}')
-           
+            
+            pearson = check.increment(sample)
+            logger.info(f'Sobol pearson : {pearson}')
        
         first_order = sobol.getFirstOrderSobol()
         total_order = sobol.getTotalOrderSobol()
