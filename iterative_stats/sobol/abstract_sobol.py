@@ -21,8 +21,7 @@ class IterativeAbstractSobol(AbstractIterativeStatistics):
  
     def _increment_variance(self, data):        
         self.var_A.increment(data[:self.nb_sim])
-        return sample_A
-           
+        
 
     def getIteration(self):
         return self.iteration

@@ -28,6 +28,7 @@ class IterativeMartinezSobol(IterativeAbstractSobol):
 
         # update iteration, var
         self.iteration += 1
+        self._increment_variance(data)
         self.var_B.increment(sample_B)
 
         for p in range(self.nb_parms):

@@ -27,7 +27,7 @@ class IterativeJansenSobol(IterativeAbstractSobol):
         
         for d in data:
             self.mean_tot.increment(d)
-
+        self._increment_variance(data)
         mean_A = self.var_A.get_mean()
 
         for p in range(self.nb_parms):
