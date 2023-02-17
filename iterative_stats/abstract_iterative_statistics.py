@@ -4,8 +4,7 @@ from typing import Dict
 import numpy as np
 
 class AbstractIterativeStatistics(ABC):
-    def __init__(self, conf: Dict):
-        vector_size = conf.get('vector_size')
+    def __init__(self, vector_size):
         self.state = np.zeros(vector_size)
         self.iteration = 0
         self.dimension = vector_size

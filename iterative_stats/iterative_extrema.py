@@ -6,8 +6,8 @@ from iterative_stats.abstract_iterative_statistics import AbstractIterativeStati
 from iterative_stats.utils.logger import logger 
 
 class IterativeExtrema(AbstractIterativeStatistics):
-    def __init__(self, conf: Dict):
-        super().__init__(conf)
+    def __init__(self, vector_size: int = 1):
+        super().__init__(vector_size)
         self.state_min = copy.deepcopy(self.state)
         
 

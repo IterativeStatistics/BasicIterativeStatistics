@@ -13,7 +13,7 @@ class TestAbstractIterativeStatistics(unittest.TestCase):
         sample = np.array([10.0, 11.0, 12.0, 13.0, 16.0, -12.2])
         gt_min = np.min(sample)
         gt_max = np.max(sample)
-        iterativeMean = IterativeExtrema({'vector_size' : 1})
+        iterativeMean = IterativeExtrema(vector_size = 1)
         for x in sample :
             iterativeMean.increment(x)
         logger.info(f' min={iterativeMean.get_min()[0]}, max= {iterativeMean.get_max()[0]}')

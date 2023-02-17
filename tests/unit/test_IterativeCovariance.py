@@ -10,7 +10,7 @@ class TestCov:
     def __init__(self, sample_1, sample_2):
         self.sample_1 = sample_1
         self.sample_2 = sample_2
-        self.iterativeCov = IterativeCovariance({'vector_size' :1})
+        self.iterativeCov = IterativeCovariance()
     
     def run(self):
         sample = np.stack((self.sample_1, self.sample_2), axis=1)
