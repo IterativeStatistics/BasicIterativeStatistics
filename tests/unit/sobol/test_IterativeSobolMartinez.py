@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
 
-class Pearson:
+class CheckSobolIndices:
     def __init__(self, nb_parms, nb_sim = 1):
         self.data_A = np.array([])
         self.data_B = np.array([])
@@ -60,7 +60,7 @@ class TestIterativeSobolMartinez(unittest.TestCase):
         inputDesign = ot.SobolIndicesExperiment(distribution, nb_sim).generate()
         outputDesign = model(inputDesign)
 
-        check_pearson = Pearson(nb_parms = nb_parms)
+        check_pearson = CheckSobolIndices(nb_parms = nb_parms)
 
         # Check the iterative algorithm
         # -- Apply the pick-freeze approach

@@ -27,10 +27,16 @@ class IterativeAbstractSobol(AbstractIterativeStatistics):
         return self.iteration
 
     def getFirstOrderSobol(self) :
-        return self._compute_varianceI()/self.var_A.get_stats()[0]
+        if self.iteration > 1 :
+            return self._compute_varianceI()/self.var_A.get_stats()[0]
+        else :
+            return None
  
     def getTotalOrderSobol(self) :
-        return self._compute_VTi()/self.var_A.get_stats()[0]
+        if self.iteration > 1 :
+            return self._compute_VTi()/self.var_A.get_stats()[0]
+        else :
+            return None
 
     def increment(self, data) :
         raise Exception('Not implemented method')

@@ -9,7 +9,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
-class Pearson:
+class CheckSobolIndices:
     def __init__(self, nb_parms, nb_sim = 1):
         self.data_A = np.array([])
         self.data_B = np.array([])
@@ -21,14 +21,14 @@ class Pearson:
     def _compute_dotproduct(self, data_1, data_2):
         vec = []
         for p in range(self.nb_parms):
-            vec.append(np.dot(data_2[:,p]-data_1, data_2[:,p]-data_1)/(2*self.iteration - 1))
+            vec.append(np.dot(data_2[:,p]-data_1, data_2[:,p]-data_1))
         return np.array(vec)
 
     def _compute_centeredsquare(self, data):
         vec = []
         for p in range(self.nb_parms):
             vec.append(np.dot(data, data))
-        return np.array(vec)/(self.iteration - 1)
+        return np.array(vec)
 
     def increment(self, sample):
         self.iteration += 1
@@ -42,14 +42,10 @@ class Pearson:
             self.data_E = np.vstack((self.data_E, sample[2*self.nb_sim:]))
 
         if self.iteration > 1 :
-            full_sample = np.append(self.data_A, self.data_B)
-            full_sample = np.append(full_sample, self.data_E)
             var = np.var(self.data_A, ddof = 1)
-            logger.info(f'var= {var}, mean= {np.mean(full_sample)}')
-            vi_first_order = self._compute_centeredsquare(self.data_A- np.mean(full_sample))
-            vi_first_order -= self._compute_dotproduct(self.data_B - np.mean(full_sample), self.data_E- np.mean(full_sample))
+            vi_first_order = var - self._compute_dotproduct(self.data_B, self.data_E)/(2*self.iteration - 1)
 
-            vi_total_order = self._compute_dotproduct(self.data_A - np.mean(full_sample), self.data_E - np.mean(full_sample))
+            vi_total_order = self._compute_dotproduct(self.data_A, self.data_E)/(2*self.iteration - 1)
             return {'first_order' : vi_first_order/var,
                     'total_order' : vi_total_order/var
                     }
@@ -62,7 +58,7 @@ class TestIterativeSobolJansen(unittest.TestCase):
         # Draw samples A and B (here A = (X1, X2, X3), where X1, X2 et X3 are iid and follows a Unif[a,b])
         nb_parms = 3
         sobol = IterativeJansenSobol({'vector_size' :1, 'nb_parms':nb_parms})
-        nb_sim = 3
+        nb_sim = 20
 
         # Create the model and input distribution
         formula = ['sin(pi_*X1)+7*sin(pi_*X2)^2+0.1*(pi_*X3)^4*sin(pi_*X1)']
@@ -72,7 +68,7 @@ class TestIterativeSobolJansen(unittest.TestCase):
         inputDesign = ot.SobolIndicesExperiment(distribution, nb_sim).generate()
         outputDesign = model(inputDesign)
 
-        check = Pearson(nb_parms = nb_parms)
+        check = CheckSobolIndices(nb_parms = nb_parms)
 
         # Check the iterative algorithm
         # -- Apply the pick-freeze approach
@@ -84,20 +80,25 @@ class TestIterativeSobolJansen(unittest.TestCase):
                 sample_Ck = copy.deepcopy(sample_A)  
                 sample_Ck[k] = sample_B[k]
                 sample = np.append(sample, model(sample_Ck)[0])
-
             sobol.increment(sample)
-            logger.info(f'Sobol iterative: first = {sobol.getFirstOrderSobol()}, tot = {sobol.getTotalOrderSobol()}')
-            
             pearson = check.increment(sample)
-            logger.info(f'Sobol pearson : {pearson}')
+            
        
         first_order = sobol.getFirstOrderSobol()
         total_order = sobol.getTotalOrderSobol()
-        
+
+        if pearson is not None :
+            for p in range(nb_parms):
+                # check first order
+                self.assertAlmostEqual(pearson.get('first_order')[p], first_order[p], delta=10e-10)
+                # check total order
+                self.assertAlmostEqual(pearson.get('total_order')[p], total_order[p], delta=10e-10)
+            
+
         sensitivityAnalysis = ot.JansenSensitivityAlgorithm(inputDesign, outputDesign, nb_sim)
         ot_first_order = sensitivityAnalysis.getFirstOrderIndices()
         ot_total_order = sensitivityAnalysis.getTotalOrderIndices()
-        logger.info(f'Sobol openturns: first = {ot_first_order}, total order {ot_total_order}')
+        
         for p in range(nb_parms):
             self.assertAlmostEqual(ot_first_order[p], first_order[p], delta=10e-10)
             self.assertAlmostEqual(total_order[p], ot_total_order[p], delta=10e-10)
