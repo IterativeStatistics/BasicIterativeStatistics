@@ -1,4 +1,5 @@
 import numpy as np
+from iterative_stats.utils.logger import logger
 
 def check_ishigami(nb_parms, nb_sim, sensitivity_indices, check_sensitivity):
     from tests.mock.ishigami import ishigami 
@@ -17,7 +18,7 @@ def check_ishigami(nb_parms, nb_sim, sensitivity_indices, check_sensitivity):
             break 
 
 
-def ishigami_with_openturns(nb_parms, nb_sim, sensitivity_indices):
+def ishigami_with_openturns(nb_parms, nb_sim, sensitivity_indices, check_sensitivity = None):
     import openturns as ot
     import copy 
     
@@ -40,6 +41,10 @@ def ishigami_with_openturns(nb_parms, nb_sim, sensitivity_indices):
             sample_Ck[k] = sample_B[k]
             sample = np.append(sample, model(sample_Ck)[0])
         sensitivity_indices.increment(sample)
+        if check_sensitivity is not None :
+            check_sensitivity.collect(sample)
 
+    logger.info(f'inputDesign : {inputDesign}')
+    logger.info(f'outputDesign : {outputDesign}')
     return inputDesign, outputDesign
 
