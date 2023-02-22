@@ -14,6 +14,8 @@ class SaltelliCheckSensitivityIndices(CheckSensitivityIndices):
             mean = np.mean(sample)
             vi = [np.dot(self.data_B - mean, self.data_E[:,p] - mean)/(self.iteration - 1) - np.mean(self.data_A - mean) * np.mean(self.data_B - mean) for p in range(self.nb_parms)]
             var = np.var(self.data_A - mean, ddof = 1)
+            logger.info(f'vi (gt) : {vi}')
+            logger.info(f'var (gt): {var}')
             return vi/var
         else :
             return None 

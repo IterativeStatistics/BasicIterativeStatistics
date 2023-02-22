@@ -20,12 +20,12 @@ class IterativeDotProduct(AbstractIterativeStatistics):
         self.iteration += 1
         
         if self.iteration == 1 :
-            self.collect_data['data_1'].append(data_1)
-            self.collect_data['data_2'].append(data_2)
+            self.collect_data['data_1'] = np.append(self.collect_data['data_1'], data_1)
+            self.collect_data['data_2']= np.append(self.collect_data['data_2'],data_2)
 
         elif self.iteration == 2 :
-            self.collect_data['data_1'].append(data_1)
-            self.collect_data['data_2'].append(data_2)
+            self.collect_data['data_1'] = np.append(self.collect_data['data_1'], data_1)
+            self.collect_data['data_2']= np.append(self.collect_data['data_2'],data_2)
 
             self.state = np.dot(self.collect_data['data_1'] - shift, self.collect_data['data_2'] - shift)
             del self.collect_data

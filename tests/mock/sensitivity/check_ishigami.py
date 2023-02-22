@@ -7,12 +7,20 @@ def check_ishigami(nb_parms, nb_sim, sensitivity_indices, check_sensitivity):
 
     input_sample_generator = Uniform3D(nb_parms = nb_parms, nb_sim = nb_sim).generator()
 
+    cpt = 0
     while True :
         try :
+            logger.info(f'------- Round {cpt} -------------')
+            cpt += 1
             input_sample = next(input_sample_generator)
             output_sample = np.apply_along_axis(ishigami, 1,input_sample)
+            logger.info(f'output_sample = {output_sample}')
             sensitivity_indices.increment(output_sample)
             check_sensitivity.collect(output_sample)
+
+            _ = check_sensitivity.compute_firstorderindices()
+            logger.info(f' vi {sensitivity_indices._compute_varianceI()}')
+            logger.info(f' var {sensitivity_indices.var_A.get_stats()}')
         except StopIteration :
             # End of the test
             break 
