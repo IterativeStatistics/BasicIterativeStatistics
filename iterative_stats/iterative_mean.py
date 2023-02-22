@@ -20,7 +20,8 @@ class IterativeShiftedMean(AbstractIterativeStatistics):
         if self.iteration == 1 : # Initialization
             self.state = data - shift 
         else :
-            self.state *= (1 - 1/self.iteration)
+            self.state *= (1. - 1./self.iteration)
             self.state += (data - self.previous_shift)/self.iteration  + (self.previous_shift - shift)
+
         # update the shift
         self.previous_shift = shift

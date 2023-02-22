@@ -14,7 +14,7 @@ class TestIterativeSensitivitySaltelli(unittest.TestCase):
     def test_ishigami(self):
         from tests.mock.sensitivity.check_ishigami import check_ishigami
         nb_parms = 3
-        nb_sim = 2
+        nb_sim = 3
         sensitivity_indices = IterativeSensitivitySaltelli(vector_size = 1, nb_parms = nb_parms)
         
         from tests.mock.sensitivity.check_saltelli import SaltelliCheckSensitivityIndices

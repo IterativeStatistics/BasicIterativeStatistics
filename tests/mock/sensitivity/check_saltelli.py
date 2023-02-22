@@ -10,12 +10,10 @@ class SaltelliCheckSensitivityIndices(CheckSensitivityIndices):
             sample = np.append(self.data_A, self.data_B)
             for p in range(self.nb_parms):              
                 sample = np.append(sample, self.data_E[:,p])
-
             mean = np.mean(sample)
-            vi = [np.dot(self.data_B - mean, self.data_E[:,p] - mean)/(self.iteration - 1) - np.mean(self.data_A - mean) * np.mean(self.data_B - mean) for p in range(self.nb_parms)]
+            mean_prod = np.mean(self.data_A - mean) * np.mean(self.data_B - mean)
+            vi = [np.dot(self.data_B - mean, self.data_E[:,p] - mean)/(self.iteration - 1) - mean_prod for p in range(self.nb_parms)]
             var = np.var(self.data_A - mean, ddof = 1)
-            logger.info(f'vi (gt) : {vi}')
-            logger.info(f'var (gt): {var}')
             return vi/var
         else :
             return None 

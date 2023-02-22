@@ -38,6 +38,12 @@ class IterativeDotProduct(AbstractIterativeStatistics):
             val +=  diff_shift + (data_1 + data_2 - shift - self.previous_shift)/(self.iteration - 1)
             self.state += val * diff_shift
         # Update
-        self.previous_shift = shift
-        self.iterative_shifted_mean_1.increment(data_1, shift)
-        self.iterative_shifted_mean_2.increment(data_2, shift)
+        self.iterative_shifted_mean_1.increment(data_1, shift[0])
+        self.iterative_shifted_mean_2.increment(data_2, shift[0])
+        self.previous_shift = shift[0]
+
+    def get_mean_1(self):
+        return self.iterative_shifted_mean_1.get_stats()
+
+    def get_mean_2(self):
+        return self.iterative_shifted_mean_2.get_stats()
