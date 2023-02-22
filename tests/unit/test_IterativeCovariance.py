@@ -50,36 +50,36 @@ class TestIterativeVariance(unittest.TestCase):
                 logger.debug('Stop')
                 break
 
-    # def test_2(self):
-    #     sample_1 = np.array([1000.0, 1001.0, 1002.0])
-    #     sample_2 = np.array([1000.0, 1001.0, 1002.0])
+    def test_2(self):
+        sample_1 = np.array([1000.0, 1001.0, 1002.0])
+        sample_2 = np.array([1000.0, 1001.0, 1002.0])
         
-    #     test_cov = TestCov(sample_1, sample_2)
-    #     gener = test_cov.run()
-    #     while True :
-    #         try :
-    #             next_pred = next(gener)
-    #             self.assertAlmostEqual(next_pred.get('gt_mu_1'), next_pred.get('mu_1'), delta=10e-10)
-    #             self.assertAlmostEqual(next_pred.get('gt_mu_2'), next_pred.get('mu_2'), delta=10e-10)
-    #             self.assertAlmostEqual(next_pred.get('gt_cov'), next_pred.get('cov'), delta=10e-10)
-    #         except StopIteration:
-    #             logger.debug('Stop')
-    #             break
+        test_cov = TestCov(sample_1, sample_2)
+        gener = test_cov.run()
+        while True :
+            try :
+                next_pred = next(gener)
+                self.assertAlmostEqual(next_pred.get('gt_mu_1'), next_pred.get('mu_1'), delta=10e-10)
+                self.assertAlmostEqual(next_pred.get('gt_mu_2'), next_pred.get('mu_2'), delta=10e-10)
+                self.assertAlmostEqual(next_pred.get('gt_cov'), next_pred.get('cov'), delta=10e-10)
+            except StopIteration:
+                logger.debug('Stop')
+                break
 
-    # def test_3(self):
-    #     delta = 1.e-10 
-    #     sample_1 = np.array([1.0 + delta, 1.0 + 2.0 * delta, 1.0 + 3 * delta])
-    #     sample_2 = np.array([1000.0, 1001.0, 1002.0])
+    def test_3(self):
+        delta = 1.e-10 
+        sample_1 = np.array([1.0 + delta, 1.0 + 2.0 * delta, 1.0 + 3 * delta])
+        sample_2 = np.array([1000.0, 1001.0, 1002.0])
         
-    #     test_cov = TestCov(sample_1, sample_2)
-    #     gener = test_cov.run()
-    #     while True :
-    #         try :
-    #             next_pred = next(gener)
-    #             self.assertAlmostEqual(next_pred.get('gt_mu_1'), next_pred.get('mu_1'), delta=10e-10)
-    #             self.assertAlmostEqual(next_pred.get('gt_mu_2'), next_pred.get('mu_2'), delta=10e-10)
-    #             self.assertAlmostEqual(next_pred.get('gt_cov'), next_pred.get('cov'), delta=10e-10)
-    #         except StopIteration:
-    #             logger.debug('Stop')
-    #             break
+        test_cov = TestCov(sample_1, sample_2)
+        gener = test_cov.run()
+        while True :
+            try :
+                next_pred = next(gener)
+                self.assertAlmostEqual(next_pred.get('gt_mu_1'), next_pred.get('mu_1'), delta=10e-10)
+                self.assertAlmostEqual(next_pred.get('gt_mu_2'), next_pred.get('mu_2'), delta=10e-10)
+                self.assertAlmostEqual(next_pred.get('gt_cov'), next_pred.get('cov'), delta=10e-10)
+            except StopIteration:
+                logger.debug('Stop')
+                break
 

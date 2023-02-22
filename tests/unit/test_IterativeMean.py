@@ -25,6 +25,6 @@ class TestMeanIterativeStatistics(unittest.TestCase):
         for x, shift in zip(sample, shifted_sample) :
             iterativeMean.increment(x, shift = shift)
             mu = np.mean(sample[:cpt+1] - shifted_sample[cpt])
-            logger.info(f'mu: {mu}, other={iterativeMean.get_stats()}')
+            # logger.info(f'mu: {mu}, other={iterativeMean.get_stats()}')
             cpt += 1
             self.assertAlmostEqual(mu, iterativeMean.get_stats(), delta=10e-2)
