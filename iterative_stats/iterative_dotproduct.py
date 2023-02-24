@@ -7,10 +7,20 @@ from iterative_stats.iterative_mean import IterativeShiftedMean
 from iterative_stats.utils.logger import logger 
 
 class IterativeDotProduct(AbstractIterativeStatistics):
-    def __init__(self, vector_size : int = 1):
+    def __init__(self, vector_size : int = 1, iterative_shifted_mean_1 : IterativeShiftedMean = None):
+        """
+            Compute iteratively the formula sum_k=0:N (A_k - shift_N)(B_k - shift_N)/(N-1)
+            iterative_shifted_mean_1 (IterativeShiftedMean) : add an external iterative shifted mean. If it is not None, the mean will not be updated into this class
+        """
         super().__init__(vector_size)
 
-        self.iterative_shifted_mean_1 = IterativeShiftedMean(vector_size)
+        if iterative_shifted_mean_1 is None :
+            self.iterative_shifted_mean_1 = IterativeShiftedMean(vector_size)
+            self.external_mean_1 = False
+        else :
+            self.iterative_shifted_mean_1 = iterative_shifted_mean_1
+            self.external_mean_1 = True
+
         self.iterative_shifted_mean_2 = IterativeShiftedMean(vector_size)
 
         self.previous_shift = None
@@ -37,10 +47,15 @@ class IterativeDotProduct(AbstractIterativeStatistics):
             val = self.iterative_shifted_mean_1.get_stats() + self.iterative_shifted_mean_2.get_stats()
             val +=  diff_shift + (data_1 + data_2 - shift - self.previous_shift)/(self.iteration - 1)
             self.state += val * diff_shift
+            
         # Update
-        self.iterative_shifted_mean_1.increment(data_1, shift[0])
-        self.iterative_shifted_mean_2.increment(data_2, shift[0])
-        self.previous_shift = shift[0]
+        if not self.external_mean_1 :
+            self.iterative_shifted_mean_1.increment(data_1, shift)
+
+        self.iterative_shifted_mean_2.increment(data_2, shift)
+        
+        self.previous_shift = copy.deepcopy(shift)
+
 
     def get_mean_1(self):
         return self.iterative_shifted_mean_1.get_stats()

@@ -6,11 +6,13 @@ def check_ishigami(nb_parms, nb_sim, sensitivity_indices, check_sensitivity):
     from tests.mock.uniform_3d import Uniform3D
 
     input_sample_generator = Uniform3D(nb_parms = nb_parms, nb_sim = nb_sim).generator()
-
+    cpt = 0
     while True :
+        
         try :
             input_sample = next(input_sample_generator)
             output_sample = np.apply_along_axis(ishigami, 1,input_sample)
+            # logger.info(f'output_sample {output_sample}')
             sensitivity_indices.increment(output_sample)
             check_sensitivity.collect(output_sample)
 
@@ -18,7 +20,8 @@ def check_ishigami(nb_parms, nb_sim, sensitivity_indices, check_sensitivity):
         except StopIteration :
             # End of the test
             break 
-
+        
+        cpt += 1
 
 def ishigami_with_openturns(nb_parms, nb_sim, sensitivity_indices, check_sensitivity = None):
     import openturns as ot
