@@ -6,10 +6,10 @@ from iterative_stats.iterative_mean import IterativeMean
 from iterative_stats.utils.logger import logger 
 
 class IterativeVariance(AbstractIterativeStatistics):
-    def __init__(self, conf: Dict):
-        super().__init__(conf)
-        self.mean = IterativeMean(conf)
-        self.sumOfCenteredSquares = np.zeros(conf.get('vector_size'))
+    def __init__(self, vector_size:int = 1):
+        super().__init__(vector_size)
+        self.mean = IterativeMean(vector_size)
+        self.sumOfCenteredSquares = np.zeros(vector_size)
 
     def increment(self, data):
         self.iteration += 1

@@ -1,27 +1,27 @@
 import numpy as np
 from typing import Dict
 
-from iterative_stats.sobol.abstract_sobol import IterativeAbstractSobol
+from iterative_stats.sensitivity.abstract_sensitivity import IterativeAbstractSensitivity
 from iterative_stats.iterative_mean import IterativeMean
 from iterative_stats.iterative_variance import IterativeVariance
 from iterative_stats.utils.logger import logger
 
 
 
-class IterativeJansenSobol(IterativeAbstractSobol):
+class IterativeSensitivityJansen(IterativeAbstractSensitivity):
     """
     Estimates the Sobol indices based on the Jansen estimate
     """
-    def __init__(self, conf: Dict):
-        super().__init__(conf)
-        self.mean_tot = IterativeMean(conf)
+    def __init__(self, nb_parms: int, vector_size: int = 1):
+        super().__init__(nb_parms = nb_parms, nb_sim = 1, vector_size = vector_size)
+        self.mean_tot = IterativeMean(vector_size)
         self.state = {'sumAminusE' : np.zeros(self.nb_parms), 'sumBminusE' : np.zeros(self.nb_parms)}
        
     def increment(self, data):
         sample_A = data[:self.nb_sim]
         sample_B = data[self.nb_sim:2*self.nb_sim]
         sample_E = data[2*self.nb_sim:]
-        
+       
         self.iteration += 1
 
         self._increment_variance(data)

@@ -16,7 +16,7 @@ class TestAbstractIterativeStatistics(unittest.TestCase):
       
     def test_init(self):
         try :
-            mock = self.MockAbstractIterativeStatistics({'vector_size': 10})
+            mock = self.MockAbstractIterativeStatistics(vector_size= 10)
             self.assertTrue(True)
             np.testing.assert_equal(mock.get_stats(), np.zeros(10))
         except Exception as e :
@@ -24,7 +24,7 @@ class TestAbstractIterativeStatistics(unittest.TestCase):
             self.assertTrue(False)
 
     def test_increment(self):
-        mock = self.MockAbstractIterativeStatistics({'vector_size': 10})
+        mock = self.MockAbstractIterativeStatistics(vector_size= 10)
         state = mock.get_stats()
 
         data = np.ones(10)
