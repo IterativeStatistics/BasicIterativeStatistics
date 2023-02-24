@@ -20,7 +20,7 @@ numpy = "^1.19.0"
 pytest = "^6.2.1"
 autopep8 = "1.6.0"
 openturns = "1.19"
-scipy = "1.10.0"
+scipy = "1.8.0"
 
 
 [build-system]
