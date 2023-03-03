@@ -6,11 +6,12 @@ import copy
 from iterative_stats.utils.logger import logger 
 
 class AbstractExperiment(ABC):
-    def __init__(self, nb_parms: int, nb_sim : int, apply_pick_freeze: bool = True, seed : int = 0,  **kwargs) -> None:
+    def __init__(self, nb_parms: int, nb_sim : int, apply_pick_freeze: bool = True, seed : int = 0, second_order: bool = False,  **kwargs) -> None:
         self.seed = seed
         self.nb_sim = nb_sim
         self.nb_parms = nb_parms
         self.apply_pick_freeze = apply_pick_freeze
+        self.second_order = second_order
 
     def generator(self) :
         for _ in range(self.nb_sim):
@@ -30,9 +31,15 @@ class AbstractExperiment(ABC):
             sample_B = self.draw()[0]
         sample = np.vstack(([sample_A], [sample_B]))
         for k in range(self.nb_parms):
-            sample_Ck = copy.deepcopy(sample_A)  
-            sample_Ck[k] = sample_B[k]
-            sample = np.vstack( (sample, sample_Ck))
+            sample_Ek = copy.deepcopy(sample_A)  
+            sample_Ek[k] = sample_B[k]
+            sample = np.vstack( (sample, sample_Ek))
+        
+        if self.second_order :
+            for k in range(self.nb_parms):
+                sample_Ck = copy.deepcopy(sample_B)  
+                sample_Ck[k] = sample_A[k]
+                sample = np.vstack( (sample, sample_Ck))
         return sample 
 
     @abstractmethod

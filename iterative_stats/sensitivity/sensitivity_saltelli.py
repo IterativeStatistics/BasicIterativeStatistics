@@ -26,7 +26,7 @@ class IterativeSensitivitySaltelli(IterativeAbstractSensitivity):
     def increment(self, data):
         sample_A = data[:self.nb_sim][0]
         sample_B = data[self.nb_sim:2*self.nb_sim][0]
-        sample_E = data[2*self.nb_sim:]
+        sample_E = data[2*self.nb_sim:(2 + self.nb_parms)*self.nb_sim]
 
         # update iteration, var
         self.iteration += 1

@@ -1,27 +1,30 @@
 import numpy as np
 from iterative_stats.utils.logger import logger
 
-def check_ishigami(nb_parms, nb_sim, sensitivity_indices, check_sensitivity):
+def check_ishigami(nb_parms, nb_sim, sensitivity_indices, check_sensitivity, second_order: bool = False):
     from tests.mock.ishigami import ishigami 
     from tests.mock.uniform_3d import Uniform3D
 
-    input_sample_generator = Uniform3D(nb_parms = nb_parms, nb_sim = nb_sim).generator()
+    input_sample_generator = Uniform3D(nb_parms = nb_parms, nb_sim = nb_sim, second_order=second_order).generator()
     cpt = 0
     while True :
-        
+        logger.info(f'___________Round {cpt}________________')
         try :
+
             input_sample = next(input_sample_generator)
             output_sample = np.apply_along_axis(ishigami, 1,input_sample)
-            # logger.info(f'output_sample {output_sample}')
+            logger.info(f'output_sample {output_sample}')
             sensitivity_indices.increment(output_sample)
             check_sensitivity.collect(output_sample)
+
+            _ = check_sensitivity.compute_secondorderindices()
 
             _ = check_sensitivity.compute_firstorderindices()
         except StopIteration :
             # End of the test
             break 
-        
         cpt += 1
+        
 
 def ishigami_with_openturns(nb_parms, nb_sim, sensitivity_indices, check_sensitivity = None):
     import openturns as ot

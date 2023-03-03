@@ -20,7 +20,7 @@ class IterativeSensitivityJansen(IterativeAbstractSensitivity):
     def increment(self, data):
         sample_A = data[:self.nb_sim]
         sample_B = data[self.nb_sim:2*self.nb_sim]
-        sample_E = data[2*self.nb_sim:]
+        sample_E = data[2*self.nb_sim:(2 + self.nb_parms)*self.nb_sim]
        
         self.iteration += 1
 

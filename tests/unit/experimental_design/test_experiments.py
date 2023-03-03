@@ -17,12 +17,33 @@ class TestExperimentalDesign(unittest.TestCase):
         self.l_bounds = [-2, -2, -2]
         self.u_bounds = [2, 2, 2]
 
-    def test_instance(self):
-        exp = Uniform3D(nb_parms = self.nb_parms, nb_sim = self.nb_sim, 
-                        l_bounds = self.l_bounds, u_bounds = self.u_bounds)
+    def test_instance_1(self):
+        gen = Uniform3D(nb_parms = self.nb_parms, nb_sim = self.nb_sim, 
+                        l_bounds = self.l_bounds, u_bounds = self.u_bounds, second_order=False).generator()
         
-        for i in range(self.nb_sim) :
-            sample = exp.draw()[0]
-            # logger.info(f'sample {i} = {sample}')
-            for i in range(self.nb_parms):
-                self.assertTrue(sample[i] <=self.u_bounds[i] and sample[i] >= self.l_bounds[i])
+        while True :
+            try :
+                sample = next(gen)
+                for i in range(self.nb_parms):
+                    self.assertTrue((sample[:,i] <=self.u_bounds[i]).any())
+                    self.assertTrue((sample[:,i] >= self.l_bounds[i]).any())
+                self.assertEqual(len(sample), (2 +  self.nb_parms))
+            except StopIteration:
+                break 
+
+
+    def test_instance_2(self):
+        gen = Uniform3D(nb_parms = self.nb_parms, nb_sim = self.nb_sim, 
+                        l_bounds = self.l_bounds, u_bounds = self.u_bounds, second_order=True).generator()
+        
+        while True :
+            try :
+                sample = next(gen)
+                for i in range(self.nb_parms):
+                    self.assertTrue((sample[:,i] <=self.u_bounds[i]).any())
+                    self.assertTrue((sample[:,i] >= self.l_bounds[i]).any())
+                self.assertEqual(len(sample), (2 + 2 * self.nb_parms))
+            except StopIteration:
+                break 
+
+        
