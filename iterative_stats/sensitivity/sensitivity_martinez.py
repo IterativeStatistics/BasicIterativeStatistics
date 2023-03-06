@@ -11,8 +11,8 @@ class IterativeSensitivityMartinez(IterativeAbstractSensitivity):
     """
     Estimates the Sobol indices iteratively based on the Martinez formula.
     """
-    def __init__(self, nb_parms: int, vector_size: int = 1):
-        super().__init__(nb_parms = nb_parms, nb_sim = 1, vector_size = vector_size)
+    def __init__(self, nb_parms: int, vector_size: int = 1, second_order: bool = False):
+        super().__init__(nb_parms = nb_parms, nb_sim = 1, vector_size = vector_size, second_order=second_order)
         self.var_B = IterativeVariance(vector_size)
         self.var_E = [IterativeVariance(vector_size) for _ in range(self.nb_parms)]
        
@@ -21,14 +21,11 @@ class IterativeSensitivityMartinez(IterativeAbstractSensitivity):
        
         self.state = {'pearson_A' : np.zeros(self.nb_parms), 'pearson_B' : np.zeros(self.nb_parms)}
        
-    def increment(self, data):
+    def _increment(self, data):
         sample_A = data[:self.nb_sim]
         sample_B = data[self.nb_sim:2*self.nb_sim]
-        sample_E = data[2*self.nb_sim:]
+        sample_E = data[2*self.nb_sim:(2 + self.nb_parms)*self.nb_sim]
 
-        # update iteration, var
-        self.iteration += 1
-        self._increment_variance(data)
         self.var_B.increment(sample_B)
 
         for p in range(self.nb_parms):
@@ -42,7 +39,8 @@ class IterativeSensitivityMartinez(IterativeAbstractSensitivity):
             # update last order
             self.covData_AE[p].increment(sample_A,sample_E[p])
             var_prod = np.multiply(self.var_E[p].get_stats(), self.var_A.get_stats())
-            self.state['pearson_A'][p] = np.divide(self.covData_AE[p].get_stats(), np.sqrt(var_prod))
+            if var_prod > 0 :
+                self.state['pearson_A'][p] = np.divide(self.covData_AE[p].get_stats(), np.sqrt(var_prod))
            
 
     def getFirstOrderIndices(self) :
@@ -52,7 +50,10 @@ class IterativeSensitivityMartinez(IterativeAbstractSensitivity):
         return 1 - self.state.get('pearson_A')
 
     def _compute_varianceI(self):
-        return None
+        res = np.zeros(self.nb_parms)
+        for p in range(self.nb_parms):
+            res[p] = self.state['pearson_B'][p]*self.var_A.get_stats()
+        return res
 
     def _compute_VTi(self):
         return None

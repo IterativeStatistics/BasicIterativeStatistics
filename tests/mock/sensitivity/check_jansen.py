@@ -8,7 +8,7 @@ class JansenCheckSensitivityIndices(CheckSensitivityIndices):
 
     def _compute_centeredsquare(self, data):
         vec = []
-        for p in range(self.nb_parms):
+        for _ in range(self.nb_parms):
             vec.append(np.dot(data, data))
         return np.array(vec)
 
