@@ -14,7 +14,7 @@ class TestIterativeSensitivityMartinez(unittest.TestCase):
     def test_ishigami(self):
         from tests.mock.sensitivity.check_ishigami import check_ishigami
         nb_parms = 3
-        nb_sim = 5
+        nb_sim = 20
         sensitivity_indices = IterativeSensitivityMartinez(vector_size = 1, nb_parms = nb_parms, second_order = True)
 
         from tests.mock.sensitivity.check_martinez import MartinezCheckSensitivityIndices
@@ -28,9 +28,10 @@ class TestIterativeSensitivityMartinez(unittest.TestCase):
 
         iterative_firstorderindices = sensitivity_indices.getFirstOrderIndices()
         iterative_secondorderindices = sensitivity_indices.getSecondOrderIndices()
+        iterative_secondorderindices_correct = [[iterative_secondorderindices[i][j][0] for i in range(nb_parms)] for j in range(nb_parms)]
+        iterative_secondorderindices = iterative_secondorderindices_correct
         iterative_totalorderindices = sensitivity_indices.getTotalOrderIndices()
 
-        logger.info(f'iterative_secondorderindices: {iterative_secondorderindices} {check_secondorderindices}')
         for p in range(nb_parms):
             # check first order
             self.assertTrue(np.allclose(check_firstorderindices[p], iterative_firstorderindices[p], atol=10e-10))

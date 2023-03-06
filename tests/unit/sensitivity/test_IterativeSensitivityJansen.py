@@ -1,5 +1,5 @@
 import unittest
-
+import numpy as np
 from iterative_stats.sensitivity.sensitivity_jansen import IterativeSensitivityJansen
 
 import logging
@@ -12,22 +12,28 @@ class TestIterativeSensitivityJansen(unittest.TestCase):
     def test_ishigami(self):
         from tests.mock.sensitivity.check_ishigami import check_ishigami
         nb_parms = 3
-        nb_sim = 20 
-        sensitivity_indices = IterativeSensitivityJansen(vector_size = 1, nb_parms = nb_parms)
+        nb_sim = 20
+        sensitivity_indices = IterativeSensitivityJansen(vector_size = 1, nb_parms = nb_parms, second_order = True)
         
         from tests.mock.sensitivity.check_jansen import JansenCheckSensitivityIndices
-        check_sensitivity = JansenCheckSensitivityIndices(nb_parms = nb_parms)
-        check_ishigami(nb_parms, nb_sim, sensitivity_indices, check_sensitivity)
+        check_sensitivity = JansenCheckSensitivityIndices(nb_parms = nb_parms, second_order = True)
+        check_ishigami(nb_parms, nb_sim, sensitivity_indices, check_sensitivity, second_order = True)
 
         check_firstorderindices = check_sensitivity.compute_firstorderindices()
+        check_secondorderindices = check_sensitivity.compute_secondorderindices()
         check_totalorderindices = check_sensitivity.compute_totalorderindices()
 
         iterative_firstorderindices = sensitivity_indices.getFirstOrderIndices()
+        iterative_secondorderindices = sensitivity_indices.getSecondOrderIndices()
+        iterative_secondorderindices_correct = [[iterative_secondorderindices[i][j][0] for i in range(nb_parms)] for j in range(nb_parms)]
+        iterative_secondorderindices = iterative_secondorderindices_correct
         iterative_totalorderindices = sensitivity_indices.getTotalOrderIndices()
 
         for p in range(nb_parms):
             # check first order
             self.assertAlmostEqual(check_firstorderindices[p], iterative_firstorderindices[p], delta=10e-10)
+            # check second order
+            self.assertTrue(np.allclose(check_secondorderindices[p], iterative_secondorderindices[p], atol=10e-10))
             # check total order
             self.assertAlmostEqual(check_totalorderindices[p], iterative_totalorderindices[p], delta=10e-10)
 
