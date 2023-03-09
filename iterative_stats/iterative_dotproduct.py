@@ -29,18 +29,19 @@ class IterativeDotProduct(AbstractIterativeStatistics):
             self.external_mean_2 = True
 
         self.previous_shift = None
-        self.collect_data = {'data_1' : [], 'data_2' : []}
+        self.collect_data = {'data_1' : None, 'data_2' : None}
 
     def increment(self, data_1, data_2, shift):
         self.iteration += 1
-        
+    
         if self.iteration == 1 :
-            self.collect_data['data_1'] = np.append(self.collect_data['data_1'], data_1)
-            self.collect_data['data_2']= np.append(self.collect_data['data_2'],data_2)
+            self.collect_data['data_1'] = data_1
+            self.collect_data['data_2']= data_2
         elif self.iteration == 2 :
-            self.collect_data['data_1'] = np.append(self.collect_data['data_1'], data_1)
-            self.collect_data['data_2']= np.append(self.collect_data['data_2'],data_2)
-            self.state = np.dot(self.collect_data['data_1'] - shift, self.collect_data['data_2'] - shift)
+            self.collect_data['data_1'] = np.vstack((self.collect_data['data_1'], data_1))
+            self.collect_data['data_2']= np.vstack((self.collect_data['data_2'], data_2))
+            for k in range(self.dimension):
+                self.state[:,k] = np.dot(self.collect_data['data_1'][:,k] - shift, self.collect_data['data_2'][:,k] - shift)
             del self.collect_data
         else :
             diff_shift = self.previous_shift - shift
