@@ -9,11 +9,13 @@ In this repository, we implement the following basic statitistics:
 - Variance (see example [here](tests/test_IterativeVariance.py))
 - Extrema (see example [here](tests/test_IterativeExtrema.py))
 - Covariance (see example [here](tests/test_IterativeCovariance.py))
+- Quantiles (see example [here](tests/test_IterativeQuantile.py))
 
 We detail in the [docs](docs/) folder the computation for each statistic:
 - [mean](docs/mean.md)
 - [covariance](docs/covariance.md)
 - [sobol](docs/sobol.md)
+- [quantile](docs/quantile.md)
 
 ## Additional info
 L'implémentation des formules itératives s'appuient sur les papiers suivant :
