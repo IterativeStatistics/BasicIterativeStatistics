@@ -5,6 +5,9 @@ from iterative_stats.abstract_iterative_statistics import AbstractIterativeStati
 from iterative_stats.utils.logger import logger 
 
 class IterativeMean(AbstractIterativeStatistics):
+    """
+        Iterative Mean
+    """
 
     def increment(self, data):
         self.iteration += 1
@@ -12,14 +15,17 @@ class IterativeMean(AbstractIterativeStatistics):
         logger.debug(f'increment= {self.increment}, mean= {self.state}')
 
 class IterativeShiftedMean(AbstractIterativeStatistics):
-    def __init__(self, vector_size : int = 1):
-        super().__init__(vector_size)
+    """
+        Iterative Mean with a shift in the data
+    """
+    def __init__(self, dim : int = 1):
+        super().__init__(dim)
         self.previous_shift = None
 
     def increment(self, data, shift: np.array):
         self.iteration += 1
         if self.iteration == 1 : # Initialization
-            self.state = data - shift 
+            self.state += data - shift 
         else :
             # logger.info(f'------------ data: {data}')
             self.state *= (1. - 1./self.iteration)

@@ -6,14 +6,13 @@ from iterative_stats.iterative_mean import IterativeMean
 from iterative_stats.utils.logger import logger 
 
 class IterativeVariance(AbstractIterativeStatistics):
-    def __init__(self, vector_size:int = 1):
-        super().__init__(vector_size)
-        self.mean = IterativeMean(vector_size)
-        self.sumOfCenteredSquares = np.zeros(vector_size)
+    def __init__(self, dim:int = 1):
+        super().__init__(dim)
+        self.mean = IterativeMean(dim)
+        self.sumOfCenteredSquares = np.zeros(dim)
 
     def increment(self, data):
         self.iteration += 1
-
         if self.iteration > 1 : 
             self.sumOfCenteredSquares += (
                 (self.iteration - 1) * (data - self.mean.get_stats()) ** 2 / self.iteration

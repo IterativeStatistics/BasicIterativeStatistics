@@ -7,10 +7,10 @@ from iterative_stats.iterative_mean import IterativeMean
 from iterative_stats.utils.logger import logger 
 
 class IterativeCovariance(AbstractIterativeStatistics):
-    def __init__(self, vector_size : int = 1):
-        super().__init__(vector_size)
-        self.mean_1 = IterativeMean(vector_size)
-        self.mean_2 = IterativeMean(vector_size)
+    def __init__(self, dim : int = 1):
+        super().__init__(dim)
+        self.mean_1 = IterativeMean(dim)
+        self.mean_2 = IterativeMean(dim)
 
     def increment(self, data_1, data_2):
         # update mean

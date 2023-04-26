@@ -1,5 +1,6 @@
 import numpy as np 
 
+# from iterative_stats.utils.logger import logger
 
 from tests.mock.sensitivity.abstract_check import CheckSensitivityIndices
 
@@ -12,7 +13,7 @@ class JansenCheckSensitivityIndices(CheckSensitivityIndices):
             vec.append(np.dot(data, data))
         return np.array(vec)
 
-    def compute_firstorderindices(self):
+    def getFirstOrderIndices(self):
         if self.iteration > 1 :
             var = np.var(self.data_A, ddof = 1)
             vi_first_order = var - self._compute_dotproduct(self.data_B, self.data_E)/(2*self.iteration - 1)
@@ -20,7 +21,7 @@ class JansenCheckSensitivityIndices(CheckSensitivityIndices):
         else :
             return None 
 
-    def compute_totalorderindices(self):
+    def getTotalOrderIndices(self):
         if self.iteration > 1 :
             var = np.var(self.data_A, ddof = 1)
             vi_total_order = self._compute_dotproduct(self.data_A, self.data_E)/(2*self.iteration - 1)
