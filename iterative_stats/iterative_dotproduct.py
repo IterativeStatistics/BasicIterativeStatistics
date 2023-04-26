@@ -29,23 +29,24 @@ class IterativeDotProduct(AbstractIterativeStatistics):
             self.external_mean_2 = True
 
         self.previous_shift = None
-        self.collect_data = {'data_1' : None, 'data_2' : None}
+        self.data_1 = None
+        self.data_2 = None
 
     def increment(self, data_1, data_2, shift):
         self.iteration += 1
-    
+        
         if self.iteration == 1 :
-            self.collect_data['data_1'] = data_1
-            self.collect_data['data_2']= data_2
+            self.data_1 = data_1
+            self.data_2= data_2
         elif self.iteration == 2 :
             if self.dimension == 1 :
-                self.collect_data['data_1'] = np.array([self.collect_data['data_1'], data_1])
-                self.collect_data['data_2']= np.array([self.collect_data['data_2'], data_2])
+                self.data_1 = np.array([self.data_1, data_1])
+                self.data_2= np.array([self.data_2, data_2])
             else :
-                self.collect_data['data_1'] = np.vstack((self.collect_data['data_1'], data_1))
-                self.collect_data['data_2']= np.vstack((self.collect_data['data_2'], data_2))
-            self.state = multi_dim_dotproduct(self.collect_data['data_1'] - shift, self.collect_data['data_2'] - shift, self.dimension)
-            del self.collect_data
+                self.data_1 = np.vstack((self.data_1, data_1))
+                self.data_2 = np.vstack((self.data_2, data_2))
+            self.state = multi_dim_dotproduct(self.data_1 - shift, self.data_2 - shift, self.dimension)
+            del self.data_1 , self.data_2
         else :
             diff_shift = self.previous_shift - shift
             self.state *= (1 - 1/(self.iteration - 1))

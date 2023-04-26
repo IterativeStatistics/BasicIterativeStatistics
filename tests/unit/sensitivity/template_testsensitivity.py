@@ -3,7 +3,7 @@
 import numpy as np
 from iterative_stats.utils.logger import logger
 from tests.mock.sensitivity.check_ishigami import check_ishigami, check_ishigami_multi_dim
-
+from iterative_stats.sensitivity import SALTELLI, JANSEN, MARTINEZ
 
 
 class SensitivityTester_Ishigami:
@@ -27,16 +27,11 @@ class SensitivityTester_Ishigami:
         assert self.sensitivity_instance.getFirstOrderIndices().shape == (self.dim, self.nb_parms)
 
         if self.dim == 1 :
-            logger.info(f'self.check_instance.getFirstOrderIndices(): {self.check_instance.getFirstOrderIndices()}')
-            logger.info(f'self.sensitivity_instance.getFirstOrderIndices(): {self.sensitivity_instance.getFirstOrderIndices()}')
-            assert np.allclose(self.check_instance.getFirstOrderIndices(), 
+             assert np.allclose(self.check_instance.getFirstOrderIndices(), 
                             self.sensitivity_instance.getFirstOrderIndices(), atol=10e-10)
         else :
             sensitivity_i = self.sensitivity_instance.getFirstOrderIndices()
-            logger.info(f'sensitivity_i: {sensitivity_i}')
             for d in range(self.dim):
-                logger.info(f'sensitivity_i: {sensitivity_i[d]}')
-                logger.info(f'self.check_instance[d]: {self.check_instance[d].getFirstOrderIndices()}')
                 assert np.allclose(self.check_instance[d].getFirstOrderIndices(), 
                                     sensitivity_i[d], atol=10e-10)
 
@@ -80,11 +75,11 @@ class SensitivityTester_IshigamiOpenTurns:
         inputDesign, outputDesign = ishigami_with_openturns(nb_parms, nb_sim, sensitivity_instance)
         import openturns as ot
 
-        if method_name == 'Jansen':
+        if method_name == JANSEN:
             self.check_instance = ot.JansenSensitivityAlgorithm(inputDesign, outputDesign, nb_sim)
-        elif method_name == 'Martinez':
+        elif method_name == MARTINEZ:
             self.check_instance = ot.MartinezSensitivityAlgorithm(inputDesign, outputDesign, nb_sim)
-        elif method_name == 'Saltelli':
+        elif method_name == SALTELLI:
             self.check_instance = ot.SaltelliSensitivityAlgorithm(inputDesign, outputDesign, nb_sim)
     
     

@@ -7,7 +7,7 @@ class CheckSensitivityIndices(ABC):
     """
         An abstract class to compute sensitivity indices in a non-iterative way
     """
-    def __init__(self, nb_parms : int, nb_sim:int = 1, second_order: bool = False, ):
+    def __init__(self, nb_parms : int, nb_sim:int = 1, second_order: bool = False):
         """
             @nb_parms (int): number of input variables
             @nb_sim   (int): number of simulations

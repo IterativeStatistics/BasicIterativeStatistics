@@ -23,7 +23,7 @@ class IterativeAbstractSensitivity(AbstractIterativeStatistics):
         """
         super().__init__(dim)
         self.nb_parms : int = nb_parms
-        self.second_order : int = second_order
+        self.second_order : bool = second_order
         self.var_A: AbstractIterativeStatistics = IterativeVariance(dim)
         self.name : str = name 
         
@@ -71,11 +71,8 @@ class IterativeAbstractSensitivity(AbstractIterativeStatistics):
             
             for i in range(self.nb_parms):
                 for j in range(self.nb_parms):
-                    # dot_product E[i][j] is a self.dimension size vector
                     val[:, i,j] = self.dotproduct_EC[i][j].get_stats() - first_order[:,i] - first_order[:,j] 
             val += self.dotproduct_AB.get_stats()[:, None, None] * (1. - 1./self.iteration)
-            # TODO : transposer val pour passer d'une matrice (nb_parms, nb_parms, dim) vers (dim, nb_parms, nb_parms)
-            # val = np.transpose(val)
             return val/self.var_A.get_stats()[:, None, None]
         else :
             return None
@@ -94,7 +91,6 @@ class IterativeAbstractSensitivity(AbstractIterativeStatistics):
             Function that applies the iterative formula to increment the first and total order indices.
         """
         self.iteration += 1
-
         # Update the total mean
         if self.second_order or self.name == SALTELLI:
             self._update_global_mean(data)
@@ -104,6 +100,7 @@ class IterativeAbstractSensitivity(AbstractIterativeStatistics):
 
         # Update the specific increment data
         self._increment(data)
+
 
         if self.second_order :
             nb_required_sim = (2+ 2*self.nb_parms)
@@ -134,8 +131,8 @@ class IterativeAbstractSensitivity(AbstractIterativeStatistics):
         """
 
         # Update EC dot product and E iterative mean
-        sample_E = data[2:(2+self.nb_parms)]
-        sample_C = data[(2+self.nb_parms):]
+        sample_E = data[2:2+self.nb_parms]
+        sample_C = data[2+self.nb_parms:]
         for i in range(self.nb_parms) :
             for j in range(self.nb_parms):
                 self.dotproduct_EC[i][j].increment(sample_E[i], sample_C[j], shift = self.mean_tot.get_stats())    
