@@ -60,7 +60,7 @@ Here are some examples of how to use **iterative-stats** to compute Sobol index 
 
 ```python
 from iterative_stats.sensitivity.sensitivity_martinez import IterativeSensitivityMartinez as IterativeSensitivityMethod
-dim = 1 #field size
+dim = 10 #field size
 nb_parms = 3 #number of parameters
 second_order = True # a boolean to compute the second order or not
 

@@ -6,7 +6,7 @@ import numpy as np
 from iterative_stats.iterative_dotproduct import IterativeDotProduct
 from iterative_stats.utils.logger import logger
 
-class TestIterativeDotProduct:
+class TestIterative:
     def __init__(self, sample_1, sample_2, shift, dim : int = 1):
         self.sample_1 = sample_1
         self.sample_2 = sample_2
