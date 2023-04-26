@@ -12,13 +12,13 @@ class MartinezCheckSensitivityIndices(CheckSensitivityIndices):
             pearson[p] = cov / (np.std(data_1, ddof=1)*np.std(data_2[:,p], ddof=1))
         return pearson
 
-    def compute_firstorderindices(self):
+    def getFirstOrderIndices(self):
         if self.iteration > 1 :
             return self._compute_pearson(self.data_B, self.data_E)
         else :
             return None 
 
-    def compute_totalorderindices(self):
+    def getTotalOrderIndices(self):
         if self.iteration > 1 :
             return  1 - self._compute_pearson(self.data_A, self.data_E)
         else :

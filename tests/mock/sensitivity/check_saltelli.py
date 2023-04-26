@@ -5,7 +5,7 @@ from tests.mock.sensitivity.abstract_check import CheckSensitivityIndices
 
 class SaltelliCheckSensitivityIndices(CheckSensitivityIndices):
 
-    def compute_firstorderindices(self):
+    def getFirstOrderIndices(self):
         if self.iteration > 1 :
             sample = np.append(self.data_A, self.data_B)
             for p in range(self.nb_parms):              
@@ -18,7 +18,7 @@ class SaltelliCheckSensitivityIndices(CheckSensitivityIndices):
         else :
             return None 
 
-    def compute_totalorderindices(self):
+    def getTotalOrderIndices(self):
         if self.iteration > 1 :
             sample = np.append(self.data_A, self.data_B)
             for p in range(self.nb_parms):
