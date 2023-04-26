@@ -5,6 +5,7 @@ from iterative_stats.utils.logger import logger
 from tests.mock.sensitivity.check_jansen import JansenCheckSensitivityIndices as SensitivityIndicesChecker
 
 NB_ISHIGAMI_PARMS = 3
+NB_SIM = 10
 
 # COMPARISON WITH NON-ITERATIVE FORMULAE
 from tests.unit.sensitivity.template_testsensitivity import SensitivityTester_Ishigami as SensitivityTester
@@ -22,7 +23,7 @@ def tester():
     # Pass this closure to the test
     yield _tester 
 
-@pytest.mark.parametrize(['nb_parms', 'nb_sim', 'second_order', 'dim'], [[NB_ISHIGAMI_PARMS,10,True, 1]])
+@pytest.mark.parametrize(['nb_parms', 'nb_sim', 'second_order', 'dim'], [[NB_ISHIGAMI_PARMS,NB_SIM,True, 1]])
 def test_jansen_ishigami(tester, nb_parms, nb_sim, second_order, dim):
     # run the closure now with the desired params
     my_tester = tester(nb_parms, nb_sim, second_order, dim)
@@ -31,7 +32,7 @@ def test_jansen_ishigami(tester, nb_parms, nb_sim, second_order, dim):
     my_tester.check_totalorder()
     my_tester.check_secondorder()
 
-@pytest.mark.parametrize(['nb_parms', 'nb_sim', 'second_order', 'dim'], [[NB_ISHIGAMI_PARMS,3,False, 5]])
+@pytest.mark.parametrize(['nb_parms', 'nb_sim', 'second_order', 'dim'], [[NB_ISHIGAMI_PARMS,NB_SIM,False, 5]])
 def test_jansen_ishigami_multidim(tester, nb_parms, nb_sim, second_order, dim):
     # run the closure now with the desired params
     my_tester = tester(nb_parms, nb_sim, second_order, dim)
@@ -54,7 +55,7 @@ def tester_openturns():
     yield _tester 
 
 
-@pytest.mark.parametrize(['nb_parms', 'nb_sim', 'dim'], [[NB_ISHIGAMI_PARMS,10,1]])
+@pytest.mark.parametrize(['nb_parms', 'nb_sim', 'dim'], [[NB_ISHIGAMI_PARMS,NB_SIM,1]])
 def test_jansen_ishigami_ot(tester_openturns, nb_parms, nb_sim, dim):
     # run the closure now with the desired params
     my_tester = tester_openturns(nb_parms, nb_sim, dim)

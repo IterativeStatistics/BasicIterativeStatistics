@@ -7,7 +7,7 @@ class CheckSensitivityIndices(ABC):
     """
         An abstract class to compute sensitivity indices in a non-iterative way
     """
-    def __init__(self, nb_parms : int, nb_sim:int = 1, dim: int = 1, second_order: bool = False, ):
+    def __init__(self, nb_parms : int, nb_sim:int = 1, second_order: bool = False, ):
         """
             @nb_parms (int): number of input variables
             @nb_sim   (int): number of simulations
@@ -16,7 +16,6 @@ class CheckSensitivityIndices(ABC):
         """
         self.nb_parms = nb_parms
         self.nb_sim = nb_sim
-        self.dim = dim
         self.second_order = second_order
 
         # Initialization for collecting data
@@ -29,17 +28,12 @@ class CheckSensitivityIndices(ABC):
         if second_order :
             self.data_C = None
         
-        # Initialize method for collect
-        if self.dim == 1 :
-            self.collect_method = lambda x,y : np.append(x,y)
-        else :
-            self.collect_method = lambda x,y : np.vstack
 
     def collect(self, sample) :
         self.iteration += 1
 
-        self.data_A = self.collect_method(self.data_A, sample[:self.nb_sim])
-        self.data_B = self.collect_method(self.data_B, sample[self.nb_sim:2*self.nb_sim])
+        self.data_A = np.append(self.data_A, sample[:self.nb_sim])
+        self.data_B = np.append(self.data_B, sample[self.nb_sim:2*self.nb_sim])
 
         if self.data_E is None :
             self.data_E = np.array([sample[2*self.nb_sim:(2 + self.nb_parms)*self.nb_sim]])
@@ -53,11 +47,8 @@ class CheckSensitivityIndices(ABC):
                 self.data_C = np.vstack((self.data_C, sample[(2 + self.nb_parms)*self.nb_sim:]))
         
     def _compute_dotproduct(self, data_1 : np.array, data_2: np.array):
-        if self.dim == 1 :
-            return np.array([np.dot(data_2[:,p]-data_1, data_2[:,p]-data_1) for p in range(self.nb_parms)])
-        else :
-            return []
-            # TODO
+        return np.array([np.dot(data_2[:,p]-data_1, data_2[:,p]-data_1) for p in range(self.nb_parms)])
+
         
     def getSecondOrderIndices(self):
         if not self.second_order :

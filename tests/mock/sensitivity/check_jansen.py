@@ -1,5 +1,6 @@
 import numpy as np 
 
+# from iterative_stats.utils.logger import logger
 
 from tests.mock.sensitivity.abstract_check import CheckSensitivityIndices
 

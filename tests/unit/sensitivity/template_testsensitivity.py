@@ -27,6 +27,8 @@ class SensitivityTester_Ishigami:
         assert self.sensitivity_instance.getFirstOrderIndices().shape == (self.dim, self.nb_parms)
 
         if self.dim == 1 :
+            logger.info(f'self.check_instance.getFirstOrderIndices(): {self.check_instance.getFirstOrderIndices()}')
+            logger.info(f'self.sensitivity_instance.getFirstOrderIndices(): {self.sensitivity_instance.getFirstOrderIndices()}')
             assert np.allclose(self.check_instance.getFirstOrderIndices(), 
                             self.sensitivity_instance.getFirstOrderIndices(), atol=10e-10)
         else :
@@ -87,9 +89,11 @@ class SensitivityTester_IshigamiOpenTurns:
     
     
     def check_firstorder(self):
+        assert self.sensitivity_instance.getFirstOrderIndices().shape == (self.dim, self.nb_parms)
         assert np.allclose(self.check_instance.getFirstOrderIndices(), self.sensitivity_instance.getFirstOrderIndices()[0], atol=10e-10)
 
     def check_totalorder(self):
+        assert self.sensitivity_instance.getTotalOrderIndices().shape == (self.dim, self.nb_parms)
         assert np.allclose(self.check_instance.getTotalOrderIndices(), self.sensitivity_instance.getTotalOrderIndices()[0], atol=10e-10)
 
 

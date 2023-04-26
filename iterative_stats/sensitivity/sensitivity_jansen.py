@@ -1,9 +1,6 @@
 import numpy as np
-from typing import Dict
 
 from iterative_stats.sensitivity.abstract_sensitivity import IterativeAbstractSensitivity
-from iterative_stats.iterative_mean import IterativeMean
-from iterative_stats.iterative_variance import IterativeVariance
 from iterative_stats.utils.logger import logger
 
 
@@ -22,10 +19,10 @@ class IterativeSensitivityJansen(IterativeAbstractSensitivity):
         sample_A = data[0]
         sample_B = data[1]
         sample_E = data[2:(2 + self.nb_parms)]
-
         for p in range(self.nb_parms):
             self.AminusE[:,p] += np.multiply(sample_A- sample_E[p], sample_A - sample_E[p])
             self.BminusE[:,p] += np.multiply(sample_B- sample_E[p], sample_B - sample_E[p])
+        logger.info(f'Jansen: {self.AminusE}')
 
     def _compute_varianceI(self) :
         return self.var_A.get_stats()[:, None] - self.BminusE/(2*self.iteration - 1)

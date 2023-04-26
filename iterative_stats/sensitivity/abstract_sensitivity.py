@@ -57,7 +57,7 @@ class IterativeAbstractSensitivity(AbstractIterativeStatistics):
             Compute the self.nb_parms first order sensitivity indices
         """
         if self.iteration > 1 :
-            return self._compute_varianceI()/self.var_A.get_stats()[0]
+            return self._compute_varianceI()/self.var_A.get_stats()[:,None]
         else :
             return None
  
