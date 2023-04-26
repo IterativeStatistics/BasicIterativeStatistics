@@ -14,41 +14,37 @@ class IterativeAbstractSensitivity(AbstractIterativeStatistics):
         Abstract class to compute the first, second and total sensitivity indices
     """
 
-    def __init__(self, nb_parms : int, nb_sim : int, vector_size: int = 1, 
+    def __init__(self, nb_parms : int, dim: int = 1, 
                         second_order: bool = False, name: str = "") -> None:
         """
             nb_parms (int) : number of input variables
-            nb_sim   (int) : simulation number
-            vector_size (int) : output size
+            dim (int) : output size
             second_order (bool) : a boolean indicating if the second order must be computed or not. 
         """
-        super().__init__(vector_size)
+        super().__init__(dim)
         self.nb_parms : int = nb_parms
-        self.nb_sim : int = nb_sim
         self.second_order : int = second_order
-        self.var_A: AbstractIterativeStatistics = IterativeVariance(vector_size)
+        self.var_A: AbstractIterativeStatistics = IterativeVariance(dim)
         self.name : str = name 
         
-        self.mean_tot : IterativeMean = IterativeMean(vector_size)
+        self.mean_tot : IterativeMean = IterativeMean(dim)
         self.mean_tot_iteration : int = 0
 
         if self.second_order or self.name == SALTELLI:
-            self.iterative_shifted_mean_A = IterativeShiftedMean(vector_size)
-            self.iterative_shifted_mean_B = IterativeShiftedMean(vector_size)
-            self.iterative_shifted_mean_E = [IterativeShiftedMean(vector_size) for _ in range(self.nb_parms)]
+            self.iterative_shifted_mean_A = IterativeShiftedMean(dim)
+            self.iterative_shifted_mean_B = IterativeShiftedMean(dim)
+            self.iterative_shifted_mean_E = [IterativeShiftedMean(dim) for _ in range(self.nb_parms)]
 
         if self.second_order :
-            self.dotproduct_AB = IterativeDotProduct(vector_size, iterative_shifted_mean_1 = self.iterative_shifted_mean_A, iterative_shifted_mean_2 = self.iterative_shifted_mean_B)
-            self.dotproduct_EC = [[IterativeDotProduct(vector_size, iterative_shifted_mean_1 = self.iterative_shifted_mean_E[i]) for _ in range(self.nb_parms)] for i in range(self.nb_parms)]
+            self.dotproduct_AB = IterativeDotProduct(dim, iterative_shifted_mean_1 = self.iterative_shifted_mean_A, iterative_shifted_mean_2 = self.iterative_shifted_mean_B)
+            self.dotproduct_EC = [[IterativeDotProduct(dim, iterative_shifted_mean_1 = self.iterative_shifted_mean_E[i]) for _ in range(self.nb_parms)] for i in range(self.nb_parms)]
 
-
- 
     def _increment_variance(self, data : np.array) -> None: 
         """
             data (np.array) : input data
             Function that increments the variance of sample A.
         """       
-        self.var_A.increment(data[:self.nb_sim])
+        self.var_A.increment(data[0])
         
     def getIteration(self) -> int:
         """
@@ -71,10 +67,16 @@ class IterativeAbstractSensitivity(AbstractIterativeStatistics):
         """
         if self.iteration > 1 and self.second_order :   
             first_order = self._compute_varianceI()
-            val = np.array([[self.dotproduct_EC[i][j].get_stats() - first_order[i] - first_order[j] for i in range(self.nb_parms)] for j in range(self.nb_parms)]) 
-            val += self.dotproduct_AB.get_stats() * (1. - 1./self.iteration)
-            logger.info(f'here: {val}')
-            return val/self.var_A.get_stats()[0]
+            val = np.zeros((self.dimension, self.nb_parms, self.nb_parms))
+            
+            for i in range(self.nb_parms):
+                for j in range(self.nb_parms):
+                    # dot_product E[i][j] is a self.dimension size vector
+                    val[:, i,j] = self.dotproduct_EC[i][j].get_stats() - first_order[:,i] - first_order[:,j] 
+            val += self.dotproduct_AB.get_stats()[:, None, None] * (1. - 1./self.iteration)
+            # TODO : transposer val pour passer d'une matrice (nb_parms, nb_parms, dim) vers (dim, nb_parms, nb_parms)
+            # val = np.transpose(val)
+            return val/self.var_A.get_stats()[:, None, None]
         else :
             return None
 
@@ -83,7 +85,7 @@ class IterativeAbstractSensitivity(AbstractIterativeStatistics):
             Compute the self.nb_parms total order sensitivity indices
         """
         if self.iteration > 1 :
-            return self._compute_VTi()/self.var_A.get_stats()[0]
+            return np.divide(self._compute_VTi(),self.var_A.get_stats()[:,None])
         else :
             return None
 
@@ -104,7 +106,7 @@ class IterativeAbstractSensitivity(AbstractIterativeStatistics):
         self._increment(data)
 
         if self.second_order :
-            nb_required_sim = (2+ 2*self.nb_parms)*self.nb_sim
+            nb_required_sim = (2+ 2*self.nb_parms)
             if len(data) < nb_required_sim:
                 raise Exception(f'The sample size must have {nb_required_sim} rows to compute the second order term.')
             else :
@@ -112,10 +114,11 @@ class IterativeAbstractSensitivity(AbstractIterativeStatistics):
         
         # Update all the shifted mean 
         if self.second_order or self.name == SALTELLI :
-            self.iterative_shifted_mean_A.increment(data[:self.nb_sim], shift = self.mean_tot.get_stats())
-            self.iterative_shifted_mean_B.increment(data[self.nb_sim:2*self.nb_sim], shift = self.mean_tot.get_stats())
+            self.iterative_shifted_mean_A.increment(data[0], shift = self.mean_tot.get_stats())
+            self.iterative_shifted_mean_B.increment(data[1], shift = self.mean_tot.get_stats())
             for i in range(self.nb_parms):
-                self.iterative_shifted_mean_E[i].increment(data[2*self.nb_sim:(2+self.nb_parms)*self.nb_sim][i], shift = self.mean_tot.get_stats())
+                self.iterative_shifted_mean_E[i].increment(data[2:(2+self.nb_parms)][i], shift = self.mean_tot.get_stats())
+
 
     def _increment(self, data : np.array) -> None :
         """
@@ -131,17 +134,14 @@ class IterativeAbstractSensitivity(AbstractIterativeStatistics):
         """
 
         # Update EC dot product and E iterative mean
-        sample_E = data[2*self.nb_sim:(2+self.nb_parms)*self.nb_sim]
-        sample_C = data[(2+self.nb_parms)*self.nb_sim:]
+        sample_E = data[2:(2+self.nb_parms)]
+        sample_C = data[(2+self.nb_parms):]
         for i in range(self.nb_parms) :
             for j in range(self.nb_parms):
                 self.dotproduct_EC[i][j].increment(sample_E[i], sample_C[j], shift = self.mean_tot.get_stats())    
         
         # Update AB dot product
-        self.dotproduct_AB.increment(data[:self.nb_sim], data[self.nb_sim:2*self.nb_sim], shift = self.mean_tot.get_stats())
-
-        val = np.array([[self.dotproduct_EC[i][j].get_stats() for i in range(self.nb_parms)] for j in range(self.nb_parms)])
-        logger.info(f'val; {val}')
+        self.dotproduct_AB.increment(data[0], data[1], shift = self.mean_tot.get_stats())
     
     def _update_global_mean(self, data : np.array) -> None :
         if self.iteration -1 == self.mean_tot_iteration : 

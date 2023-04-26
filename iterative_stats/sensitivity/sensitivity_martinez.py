@@ -11,21 +11,23 @@ class IterativeSensitivityMartinez(IterativeAbstractSensitivity):
     """
     Estimates the Sobol indices iteratively based on the Martinez formula.
     """
-    def __init__(self, nb_parms: int, vector_size: int = 1, second_order: bool = False):
-        super().__init__(nb_parms = nb_parms, nb_sim = 1, vector_size = vector_size, second_order=second_order)
-        self.var_B = IterativeVariance(vector_size)
-        self.var_E = [IterativeVariance(vector_size) for _ in range(self.nb_parms)]
+    def __init__(self, nb_parms: int, dim: int = 1, second_order: bool = False):
+        super().__init__(nb_parms = nb_parms, dim = dim, second_order=second_order)
+        self.var_B = IterativeVariance(dim)
+        self.var_E = [IterativeVariance(dim) for _ in range(self.nb_parms)]
        
-        self.covData_AE = [IterativeCovariance(vector_size) for _ in range(self.nb_parms)]
-        self.covData_BE = [IterativeCovariance(vector_size) for _ in range(self.nb_parms)]
+        self.covData_AE = [IterativeCovariance(dim) for _ in range(self.nb_parms)]
+        self.covData_BE = [IterativeCovariance(dim) for _ in range(self.nb_parms)]
        
-        self.state = {'pearson_A' : np.zeros(self.nb_parms), 'pearson_B' : np.zeros(self.nb_parms)}
+        self.pearson_A = np.zeros((dim, self.nb_parms))
+        self.pearson_B = np.zeros((dim, self.nb_parms))
+        del self.state 
+
        
     def _increment(self, data):
-        sample_A = data[:self.nb_sim]
-        sample_B = data[self.nb_sim:2*self.nb_sim]
-        sample_E = data[2*self.nb_sim:(2 + self.nb_parms)*self.nb_sim]
-
+        sample_A = data[0]
+        sample_B = data[1]
+        sample_E = data[2:(2 + self.nb_parms)]
         self.var_B.increment(sample_B)
 
         for p in range(self.nb_parms):
@@ -34,25 +36,25 @@ class IterativeSensitivityMartinez(IterativeAbstractSensitivity):
             # update first order
             self.covData_BE[p].increment(sample_B,sample_E[p])
             var_prod = np.multiply(self.var_E[p].get_stats(), self.var_B.get_stats())
-            self.state['pearson_B'][p] = np.divide(self.covData_BE[p].get_stats(), np.sqrt(var_prod))
+            self.pearson_B[:,p] = np.divide(self.covData_BE[p].get_stats(), np.sqrt(var_prod))
 
             # update last order
             self.covData_AE[p].increment(sample_A,sample_E[p])
             var_prod = np.multiply(self.var_E[p].get_stats(), self.var_A.get_stats())
-            if var_prod > 0 :
-                self.state['pearson_A'][p] = np.divide(self.covData_AE[p].get_stats(), np.sqrt(var_prod))
+            if var_prod.any() > 0 :
+                self.pearson_A[:,p] = np.divide(self.covData_AE[p].get_stats(), np.sqrt(var_prod))
            
 
     def getFirstOrderIndices(self) :
-        return self.state.get('pearson_B')
+        return self.pearson_B
 
     def getTotalOrderIndices(self) :
-        return 1 - self.state.get('pearson_A')
+        return 1. - self.pearson_A
 
     def _compute_varianceI(self):
-        res = np.zeros(self.nb_parms)
+        res = np.zeros((self.dimension, self.nb_parms))
         for p in range(self.nb_parms):
-            res[p] = self.state['pearson_B'][p]*self.var_A.get_stats()
+            res[:,p] = np.multiply(self.pearson_B[:,p],self.var_A.get_stats())
         return res
 
     def _compute_VTi(self):
