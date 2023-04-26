@@ -12,12 +12,14 @@ class TestQuantileIterativeStatistics(unittest.TestCase):
         sample = np.random.normal(mu, sigma, 5000)
         me = np.median(sample)
  
-        iterativeMedian = IterativeQuantile(vector_size = 1)
+        iterativeMedian = IterativeQuantile(dim = 1)
         iterativeMedian.setDesiredQuantile(0.5)
         
         iterativeMedian.setMaxIterations(sample.size)
         for x in sample :
             iterativeMedian.increment(x)
+        
+        logger.info(f'me: {me} / {iterativeMedian.get_stats()}')
         self.assertAlmostEqual(me, iterativeMedian.get_stats()[0], delta=0.5)
 
 
@@ -26,14 +28,16 @@ class TestQuantileIterativeStatistics(unittest.TestCase):
         sigma = 10 
         sample = np.random.normal(mu, sigma, 5000)
         qO7 = np.quantile(sample, 0.7)
+        me = np.median(sample)
  
-        iterativeQ07 = IterativeQuantile(vector_size = 1)
+        iterativeQ07 = IterativeQuantile(dim = 1)
         iterativeQ07.setDesiredQuantile(0.7)
         
 
         iterativeQ07.setMaxIterations(sample.size)
         for x in sample :
             iterativeQ07.increment(x)
+        logger.info(f'me: {me} / {iterativeQ07.get_stats()}')
         self.assertAlmostEqual(me, iterativeQ07.get_stats()[0], delta=0.5)
  
 

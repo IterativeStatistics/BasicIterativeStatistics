@@ -8,12 +8,12 @@ from iterative_stats.abstract_iterative_statistics import AbstractIterativeStati
 from iterative_stats.utils.logger import logger 
 
 class IterativeQuantile(AbstractIterativeStatistics):
-    def __init__(self, vector_size: int = 1):
-        super().__init__(vector_size)
-        self.state_min = copy.deepcopy(self.state)
-        self.state_max = copy.deepcopy(self.state)
-        self.indicator = copy.deepcopy(self.state)
-        self.C = copy.deepcopy(self.state)
+    def __init__(self, dim: int = 1):
+        super().__init__(dim)
+        self.state_min = np.zeros(self.dimension)
+        self.state_max = np.zeros(self.dimension)
+        self.indicator = np.zeros(self.dimension)
+        self.C = np.zeros(self.dimension)
         self.max_it = 0 
         self.alpha = 0.5    
 
