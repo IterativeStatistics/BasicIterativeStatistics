@@ -43,6 +43,7 @@ In this repository, we implement the following basic statistics:
 - Variance (see example [here](./tests/unit/test_IterativeVariance.py))
 - Extrema (see example [here](./tests/unit/test_IterativeExtrema.py))
 - Covariance (see example [here](./tests/unit/test_IterativeCovariance.py))
+- Threshold (see example [here](tests/unit/test_IterativeThreshold.py)) (count the number of threshold exceedances).
 
 It also contains more advanced statistics: the Sobol indices. For each method (Martinez, Saltelli and Jansen), the first order indices, computed iteratively, as well as the total orders are available. We also include the second ordre for the Martinez and Jansen methods (the second order for the Saltelli method is still a work in progress).
 - Pearson coefficient (Martinez): examples are available [here](tests/unit/sensitivity/test_IterativeSensitivityMartinez.py).
