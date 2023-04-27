@@ -20,7 +20,7 @@ class TestQuantileIterativeStatistics(unittest.TestCase):
             iterativeMedian.increment(x)
         
         logger.info(f'me: {me} / {iterativeMedian.get_stats()}')
-        self.assertAlmostEqual(me, iterativeMedian.get_stats()[0], delta=0.5)
+        self.assertAlmostEqual(me, iterativeMedian.get_stats(), delta=0.5)
 
 
     def test_increment_iterativeQuantile_NormalDistribution(self):
@@ -28,7 +28,6 @@ class TestQuantileIterativeStatistics(unittest.TestCase):
         sigma = 10 
         sample = np.random.normal(mu, sigma, 5000)
         qO7 = np.quantile(sample, 0.7)
-        me = np.median(sample)
  
         iterativeQ07 = IterativeQuantile(dim = 1)
         iterativeQ07.setDesiredQuantile(0.7)
@@ -37,8 +36,8 @@ class TestQuantileIterativeStatistics(unittest.TestCase):
         iterativeQ07.setMaxIterations(sample.size)
         for x in sample :
             iterativeQ07.increment(x)
-        logger.info(f'me: {me} / {iterativeQ07.get_stats()}')
-        self.assertAlmostEqual(me, iterativeQ07.get_stats()[0], delta=0.5)
+        logger.info(f'qO7: {qO7} / {iterativeQ07.get_stats()}')
+        self.assertAlmostEqual(qO7, iterativeQ07.get_stats(), delta=0.5)
  
 
 
