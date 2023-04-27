@@ -39,12 +39,16 @@ The python package **iterative_stats** free software distributed under the BSD 3
 ## Iterative statistics
 
 In this repository, we implement the following basic statistics:
-- Mean (see example [here](./tests/unit/test_IterativeMean.py))
-- Variance (see example [here](./tests/unit/test_IterativeVariance.py))
-- Extrema (see example [here](./tests/unit/test_IterativeExtrema.py))
-- Covariance (see example [here](./tests/unit/test_IterativeCovariance.py))
-- Threshold (see example [here](tests/unit/test_IterativeThreshold.py)) (count the number of threshold exceedances).
+- Mean (see examples [here](./tests/unit/test_IterativeMean.py))
+- Variance (see examples [here](./tests/unit/test_IterativeVariance.py))
+- Extrema (see examples [here](./tests/unit/test_IterativeExtrema.py))
+- Covariance (see examples [here](./tests/unit/test_IterativeCovariance.py))
+- Threshold (see examples [here](tests/unit/test_IterativeThreshold.py)) (count the number of threshold exceedances).
+- Quantile (see examples [here](tests/unit/test_IterativeQuantile.py))
 
+*About the quantiles*: Following [[4]](#4), we implements the Robbins-Monro (RM) algorithm for quantile estimation. The tuning parameters of this algorithm have been studied (through intensive numerical tests). In the implemented algorithm, the final number of iterations (i.e., the number of runs of the computer model) N is a priori fixed, which is a classical way of dealing with uncertainty quantization problems.
+
+*About the Sobol indices*:
 It also contains more advanced statistics: the Sobol indices. For each method (Martinez, Saltelli and Jansen), the first order indices, computed iteratively, as well as the total orders are available. We also include the second ordre for the Martinez and Jansen methods (the second order for the Saltelli method is still a work in progress).
 - Pearson coefficient (Martinez): examples are available [here](tests/unit/sensitivity/test_IterativeSensitivityMartinez.py).
 - Jansen method: examples are available [here](tests/unit/sensitivity/test_IterativeSensitivityJansen.py).
@@ -107,3 +111,4 @@ The implementation of the iterative formulas is based on the following papers:
 
 <a id="3">[3]</a> Philippe Pébay. 2008. Formulas for robust, one-pass parallel computation of covariances and arbitrary-order statistical moments. Sandia Report SAND2008-6212, Sandia National Laboratories 94 (2008).
 
+<a id="4">[4]</a> Iooss, Bertrand, and Jérôme Lonchampt. "Robust tuning of Robbins-Monro algorithm for quantile estimation-Application to wind-farm asset management." ESREL 2021. 2021.
