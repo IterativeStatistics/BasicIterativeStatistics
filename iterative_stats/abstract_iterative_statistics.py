@@ -22,19 +22,18 @@ class AbstractIterativeStatistics(ABC):
         """
         raise Exception('Not implemented method')
     
-    @abstractmethod
     def save_state(self):
         """
-            An abstract method to implement. It save the current state of the objects.
+            A method that save the current state.
         """
-        raise Exception('Not implemented method')
+        return {'iteration': self.iteration, 'state': self.state}
 
-    @abstractmethod
-    def load_from_state(self, state:object):
+    def load_from_state(self, state: object):
         """
-            An abstract method to implement. It load the current state of the object.
+            A method that load the current state
         """
-        raise Exception('Not implemented method')
+        self.iteration = state.get('iteration', 0)
+        self.state = state.get('state', None)
 
     def get_stats(self):
         """

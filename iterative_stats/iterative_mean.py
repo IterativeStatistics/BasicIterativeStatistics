@@ -15,20 +15,6 @@ class IterativeMean(AbstractIterativeStatistics):
         logger.debug(f'increment= {self.increment}, mean= {self.state}')
 
 
-    def save_state(self):
-        """
-            An abstract method to implement. It save the current state of the objects.
-        """
-        return {'iteration': self.iteration, 'state': self.state}
-
-    def load_from_state(self, state: object):
-        """
-            It load the current state of the object.
-        """
-        self.iteration = state.get('iteration', 0)
-        self.state = state.get('state', None)
-
-
 class IterativeShiftedMean(AbstractIterativeStatistics):
     """
         Iterative Mean with a shift in the data
