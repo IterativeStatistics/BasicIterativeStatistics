@@ -63,16 +63,16 @@ class SensitivityTester_Ishigami:
 
 
 class SensitivityTester_IshigamiOpenTurns:
-    def __init__(self, nb_parms, nb_sim, dim, sensitivity_instance, method_name):
+    def __init__(self, nb_parms, nb_sim, dim, method_name, save_state: int = None):
         self.nb_parms = nb_parms
         self.nb_sim = nb_sim
         self.second_order = False
         self.dim = dim
 
-        self.sensitivity_instance = sensitivity_instance
+        # self.sensitivity_instance = sensitivity_instance
 
         from tests.mock.sensitivity.check_ishigami import ishigami_with_openturns
-        inputDesign, outputDesign = ishigami_with_openturns(nb_parms, nb_sim, sensitivity_instance)
+        inputDesign, outputDesign, self.sensitivity_instance = ishigami_with_openturns(dim, nb_parms, nb_sim, method_name, save_state=save_state)
         import openturns as ot
 
         if method_name == JANSEN:
@@ -85,10 +85,10 @@ class SensitivityTester_IshigamiOpenTurns:
     
     def check_firstorder(self):
         assert self.sensitivity_instance.getFirstOrderIndices().shape == (self.dim, self.nb_parms)
-        assert np.allclose(self.check_instance.getFirstOrderIndices(), self.sensitivity_instance.getFirstOrderIndices()[0], atol=10e-10)
+        assert np.allclose(self.check_instance.getFirstOrderIndices(), self.sensitivity_instance.getFirstOrderIndices(), atol=10e-10)
 
     def check_totalorder(self):
         assert self.sensitivity_instance.getTotalOrderIndices().shape == (self.dim, self.nb_parms)
-        assert np.allclose(self.check_instance.getTotalOrderIndices(), self.sensitivity_instance.getTotalOrderIndices()[0], atol=10e-10)
+        assert np.allclose(self.check_instance.getTotalOrderIndices(), self.sensitivity_instance.getTotalOrderIndices(), atol=10e-10)
 
 

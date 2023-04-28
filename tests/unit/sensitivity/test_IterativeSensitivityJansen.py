@@ -44,8 +44,7 @@ from tests.unit.sensitivity.template_testsensitivity import SensitivityTester_Is
 @pytest.fixture
 def tester_openturns():
     def _tester(nb_parms, nb_sim, dim):
-        sensitivity_instance = IterativeSensitivityMethod(dim = dim, nb_parms = nb_parms, second_order = False)
-        return SensitivityTester_IshigamiOpenTurns(nb_parms, nb_sim, dim, sensitivity_instance, method_name= JANSEN)
+        return SensitivityTester_IshigamiOpenTurns(nb_parms, nb_sim, dim, method_name= JANSEN)
     yield _tester 
 
 
@@ -59,6 +58,28 @@ def test_jansen_ishigami_ot(tester_openturns, nb_parms, nb_sim, dim):
 
 
 
+# CHECK FAULT TOLERANT
+from tests.unit.sensitivity.template_testsensitivity import SensitivityTester_IshigamiOpenTurns
+@pytest.fixture
+def tester_openturns_ft():
+    def _tester(nb_parms, nb_sim, dim, save_state):
+        return SensitivityTester_IshigamiOpenTurns(nb_parms, nb_sim, dim, method_name= JANSEN, save_state=save_state)
+    yield _tester 
+
+@pytest.mark.parametrize(['nb_parms', 'nb_sim', 'dim', 'save_state'], [[NB_ISHIGAMI_PARMS,NB_SIM,1, 5]])
+def test_martinez_ishigami_ot_ft(tester_openturns_ft, nb_parms, nb_sim, dim, save_state):
+    my_tester = tester_openturns_ft(nb_parms, nb_sim, dim, save_state)
+
+    my_tester.check_firstorder()
+    my_tester.check_totalorder()
+
+
+@pytest.mark.parametrize(['nb_parms', 'nb_sim', 'dim', 'save_state'], [[NB_ISHIGAMI_PARMS,NB_SIM,5, 5]])
+def test_martinez_ishigami_ot_ft_multidim(tester_openturns_ft, nb_parms, nb_sim, dim, save_state):
+    my_tester = tester_openturns_ft(nb_parms, nb_sim, dim, save_state)
+
+    my_tester.check_firstorder()
+    my_tester.check_totalorder()
 
  
 

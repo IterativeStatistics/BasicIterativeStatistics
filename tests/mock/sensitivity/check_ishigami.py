@@ -10,7 +10,7 @@ def check_ishigami(nb_parms, nb_sim, sensitivity_indices, check_sensitivity, sec
     input_sample_generator = Uniform3D(nb_parms = nb_parms, nb_sim = nb_sim, second_order=second_order).generator()
     cpt = 0
     while True :
-        logger.info(f'___________Round {cpt}________________')
+        # logger.info(f'___________Round {cpt}________________')
         try :
 
             input_sample = next(input_sample_generator)
@@ -38,7 +38,7 @@ def check_ishigami_multi_dim(nb_parms, nb_sim, sensitivity_indices,
     if second_order :
         size_output += nb_parms
     while True :
-        logger.info(f'___________Round {cpt}________________')
+        # logger.info(f'___________Round {cpt}________________')
         try :
             outputs = np.zeros((size_output, dim))
             for i in range(dim) :
@@ -60,10 +60,20 @@ def check_ishigami_multi_dim(nb_parms, nb_sim, sensitivity_indices,
             break 
         cpt += 1
 
-def ishigami_with_openturns(nb_parms, nb_sim, sensitivity_indices, check_sensitivity = None):
+def ishigami_with_openturns(dim, nb_parms, nb_sim, sensitivity_name, check_sensitivity = None, save_state: int = None):
     import openturns as ot
     import copy 
     
+    # Construct sensitivity_instance
+    from iterative_stats.sensitivity import SALTELLI, JANSEN, MARTINEZ
+    if sensitivity_name == MARTINEZ:
+        from iterative_stats.sensitivity.sensitivity_martinez import IterativeSensitivityMartinez as IterativeSensitivityMethod
+    elif sensitivity_name == JANSEN:
+        from iterative_stats.sensitivity.sensitivity_jansen import IterativeSensitivityJansen as IterativeSensitivityMethod
+    elif sensitivity_name ==  SALTELLI:
+        from iterative_stats.sensitivity.sensitivity_saltelli import IterativeSensitivitySaltelli as IterativeSensitivityMethod
+
+    sensitivity_instance = IterativeSensitivityMethod(dim = dim, nb_parms = nb_parms, second_order=False)
     # Create the model and input distribution
     formula = ['sin(pi_*X1)+7*sin(pi_*X2)^2+0.1*(pi_*X3)^4*sin(pi_*X1)']
     model = ot.SymbolicFunction(['X1', 'X2', 'X3'], formula)
@@ -82,9 +92,15 @@ def ishigami_with_openturns(nb_parms, nb_sim, sensitivity_indices, check_sensiti
             sample_Ck = copy.deepcopy(sample_A)  
             sample_Ck[k] = sample_B[k]
             sample = np.append(sample, model(sample_Ck)[0])
-        sensitivity_indices.increment(sample)
+        
+        if save_state is not None and i == save_state :
+            state = sensitivity_instance.save_state()
+            sensitivity_instance = IterativeSensitivityMethod(dim = dim, nb_parms = nb_parms, second_order=False, state=state)
+            logger.info(f'change instance')
+        logger.info(f'sensitivity_instance. {sensitivity_instance.getFirstOrderIndices()}')
+        sensitivity_instance.increment(sample)
         if check_sensitivity is not None :
             check_sensitivity.collect(sample)
 
-    return inputDesign, outputDesign
+    return inputDesign, outputDesign, sensitivity_instance
 

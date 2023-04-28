@@ -15,29 +15,32 @@ class IterativeAbstractSensitivity(AbstractIterativeStatistics):
     """
 
     def __init__(self, nb_parms : int, dim: int = 1, 
-                        second_order: bool = False, name: str = "") -> None:
+                        second_order: bool = False, name: str = "", state: object = None) -> None:
         """
             nb_parms (int) : number of input variables
             dim (int) : output size
             second_order (bool) : a boolean indicating if the second order must be computed or not. 
         """
-        super().__init__(dim)
+        self.name : str = name
         self.nb_parms : int = nb_parms
-        self.second_order : bool = second_order
-        self.var_A: AbstractIterativeStatistics = IterativeVariance(dim)
-        self.name : str = name 
-        
-        self.mean_tot : IterativeMean = IterativeMean(dim)
-        self.mean_tot_iteration : int = 0
+        self.second_order : bool = second_order 
 
-        if self.second_order or self.name == SALTELLI:
-            self.iterative_shifted_mean_A = IterativeShiftedMean(dim)
-            self.iterative_shifted_mean_B = IterativeShiftedMean(dim)
-            self.iterative_shifted_mean_E = [IterativeShiftedMean(dim) for _ in range(self.nb_parms)]
+        if state is None :
+            self.mean_tot : IterativeMean = IterativeMean(dim)
+            self.mean_tot_iteration : int = 0
+            self.var_A: AbstractIterativeStatistics = IterativeVariance(dim)
 
-        if self.second_order :
-            self.dotproduct_AB = IterativeDotProduct(dim, iterative_shifted_mean_1 = self.iterative_shifted_mean_A, iterative_shifted_mean_2 = self.iterative_shifted_mean_B)
-            self.dotproduct_EC = [[IterativeDotProduct(dim, iterative_shifted_mean_1 = self.iterative_shifted_mean_E[i]) for _ in range(self.nb_parms)] for i in range(self.nb_parms)]
+            if second_order or name == SALTELLI:
+                self.iterative_shifted_mean_A = IterativeShiftedMean(dim)
+                self.iterative_shifted_mean_B = IterativeShiftedMean(dim)
+                self.iterative_shifted_mean_E = [IterativeShiftedMean(dim) for _ in range(nb_parms)]
+
+            if second_order :
+                self.dotproduct_AB = IterativeDotProduct(dim, iterative_shifted_mean_1 = self.iterative_shifted_mean_A, iterative_shifted_mean_2 = self.iterative_shifted_mean_B)
+                self.dotproduct_EC = [[IterativeDotProduct(dim, iterative_shifted_mean_1 = self.iterative_shifted_mean_E[i]) for _ in range(nb_parms)] for i in range(nb_parms)]
+
+        super().__init__(dim, state)
+
 
     def _increment_variance(self, data : np.array) -> None: 
         """
@@ -159,3 +162,49 @@ class IterativeAbstractSensitivity(AbstractIterativeStatistics):
         """
         raise Exception('Not implemented method')
 
+    def save_state(self):
+        """
+            An abstract method to implement. It save the current state of the objects.
+        """
+        
+        state = {}
+        state['iteration'] = self.iteration
+        state['mean_tot'] = self.mean_tot.save_state()
+        state['mean_tot_iteration'] = self.mean_tot_iteration
+        state['var_A'] = self.var_A.save_state()
+
+        if self.second_order or self.name == SALTELLI:
+            state['iterative_shifted_mean_A'] = self.iterative_shifted_mean_A.save_state()
+            state['iterative_shifted_mean_B'] = self.iterative_shifted_mean_B.save_state()
+            state['iterative_shifted_mean_E'] = [self.iterative_shifted_mean_E[i].save_state() for i in range(self.nb_parms)]
+
+        if self.second_order :
+            state['dotproduct_AB'] = self.dotproduct_AB.save_state()
+            state['dotproduct_EC'] = [[self.dotproduct_EC[i][j].save_state() for j in range(self.nb_parms)] for i in range(self.nb_parms)]
+
+        return state
+
+    def load_from_state(self, state: object):
+        """
+            It load the current state of the object.
+        """
+        self.iteration = state.get('iteration')
+        self.mean_tot = IterativeMean(self.dimension, state.get('mean_tot'))
+        self.mean_tot_iteration = state.get('mean_tot_iteration')
+        self.var_A = IterativeVariance(self.dimension, state.get('var_A'))
+
+        if self.second_order or self.name == SALTELLI:
+            self.iterative_shifted_mean_A = IterativeShiftedMean(self.dimension, state.get('iterative_shifted_mean_A'))
+            self.iterative_shifted_mean_B = IterativeShiftedMean(self.dimension, state.get('iterative_shifted_mean_B'))
+            self.iterative_shifted_mean_E = [IterativeShiftedMean(self.dimension, s) for s in state.get('iterative_shifted_mean_E')]
+
+        if self.second_order :
+            self.dotproduct_AB = IterativeDotProduct(self.dimension, 
+                                                        iterative_shifted_mean_1 = self.iterative_shifted_mean_A, 
+                                                        iterative_shifted_mean_2 = self.iterative_shifted_mean_B,
+                                                        state= state.get('dotproduct_AB'))
+            s = state.get('dotproduct_EC')
+            self.dotproduct_EC = [[IterativeDotProduct(self.dimension, 
+                                    iterative_shifted_mean_1 = self.iterative_shifted_mean_E[i], state=s[i][j]) for j in range(self.nb_parms)] for i in range(self.nb_parms)]
+
+        
