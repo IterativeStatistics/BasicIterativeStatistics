@@ -9,8 +9,8 @@ class IterativeThreshold(AbstractIterativeStatistics):
         Iterative Threshold
     """
 
-    def __init__(self, dim:int = 1, min_threshold: np.array = None, max_threshold: np.array = None):
-        super().__init__(dim)
+    def __init__(self, dim:int = 1, min_threshold: np.array = None, max_threshold: np.array = None, state: object = None):
+        super().__init__(dim, state)
         self.min_threshold = min_threshold
         self.max_threshold = max_threshold
 

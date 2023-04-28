@@ -7,17 +7,22 @@ from iterative_stats.iterative_covariance import IterativeCovariance
 from iterative_stats.utils.logger import logger
 
 class TestCov:
-    def __init__(self, sample_1, sample_2, dim: int = 1):
+    def __init__(self, sample_1, sample_2, dim: int = 1, save_state: int = None):
         self.sample_1 = sample_1
         self.sample_2 = sample_2
         self.nb_sample = len(sample_1)
         self.dim = dim
+        self.save_state = save_state
         self.iterativeCov = IterativeCovariance(dim=dim)
         
     
     def run(self):
         for i in range(self.nb_sample):
-            # logger.info(f"---- NEW SAMPLE {i} ----")
+            if self.save_state is not None and i == self.save_state :
+                logger.info(f'save state Done')
+                state = self.iterativeCov.save_state()
+                self.iterativeCov = IterativeCovariance(dim=self.dim, state=state)
+
             self.iterativeCov.increment(data_1= self.sample_1[i], data_2= self.sample_2[i])
 
             if i > 0 :
@@ -41,6 +46,23 @@ class TestIterativeVariance(unittest.TestCase):
         sample_2 = np.array([10.0, 11.0, 12.0, 13.0, 16.0, -12.2])
         
         test_cov = TestCov(sample_1, sample_2)
+        gener = test_cov.run()
+        while True :
+            try :
+                next_pred = next(gener)
+                # logger.info(f'next_pred= {next_pred}')
+                self.assertAlmostEqual(next_pred.get('gt_mu_1'), next_pred.get('mu_1'), delta=10e-10)
+                self.assertAlmostEqual(next_pred.get('gt_mu_2'), next_pred.get('mu_2'), delta=10e-10)
+                self.assertAlmostEqual(next_pred.get('gt_cov'), next_pred.get('cov'), delta=10e-10)
+            except StopIteration:
+                logger.debug('Stop')
+                break
+
+    def test_1_ft(self):
+        sample_1 = np.array([10.0, 11.0, 12.0, 13.0, 16.0, -12.2])
+        sample_2 = np.array([10.0, 11.0, 12.0, 13.0, 16.0, -12.2])
+        
+        test_cov = TestCov(sample_1, sample_2, save_state=3)
         gener = test_cov.run()
         while True :
             try :
@@ -92,6 +114,30 @@ class TestIterativeVariance(unittest.TestCase):
         sample_2 = np.array([[10.0, 11.0, 12.0], [1.0 + delta, 1.0 + 2.0 * delta, 1.0 + 3 * delta]])
         
         test_cov = TestCov(np.transpose(sample_1), np.transpose(sample_2), dim=2)
+        gener = test_cov.run()
+        while True :
+            try :
+                next_pred = next(gener)
+                logger.info(f'next_pred: {next_pred}')
+                # Check mu1
+                res = np.allclose(next_pred.get('gt_mu_1'), next_pred.get('mu_1'), atol=10e-10)
+                self.assertTrue(res)
+                # Check mu2
+                res = np.allclose(next_pred.get('gt_mu_2'), next_pred.get('mu_2'), atol=10e-10)
+                self.assertTrue(res)
+                # Check cov
+                res = np.allclose(next_pred.get('gt_cov'), next_pred.get('cov'), atol=10e-10)
+                self.assertTrue(res)
+            except StopIteration:
+                logger.debug('Stop')
+                break
+
+    def test_4_multidim_ft(self):
+        delta = 1.e-10 
+        sample_1 = np.array([[10.0, 11.0, 12.0], [1000.0, 1001.0, 1002.0]])
+        sample_2 = np.array([[10.0, 11.0, 12.0], [1.0 + delta, 1.0 + 2.0 * delta, 1.0 + 3 * delta]])
+        
+        test_cov = TestCov(np.transpose(sample_1), np.transpose(sample_2), dim=2, save_state=2)
         gener = test_cov.run()
         while True :
             try :

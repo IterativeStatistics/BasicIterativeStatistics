@@ -40,12 +40,13 @@ class IterativeShiftedMean(AbstractIterativeStatistics):
         """
             An abstract method to implement. It save the current state of the objects.
         """
-        return {'iteration': self.iteration, 'state': self.state, 'previous_shift' : self.previous_shift}
+        state = super().save_state()
+        state['previous_shift'] = self.previous_shift
+        return state
 
     def load_from_state(self, state: object):
         """
             It load the current state of the object.
         """
-        self.iteration = state.get('iteration', 0)
-        self.state = state.get('state', None)
+        super().load_from_state(state)
         self.previous_shift = state.get('previous_shift', None)

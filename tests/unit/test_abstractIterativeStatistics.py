@@ -25,10 +25,19 @@ class TestAbstractIterativeStatistics(unittest.TestCase):
 
     def test_increment(self):
         mock = self.MockAbstractIterativeStatistics(dim= 10)
-        state = mock.get_stats()
 
         data = np.ones(10)
         mock.increment(data)
         self.assertListEqual(list(np.ones(10)), list(mock.get_stats()))
 
+
+    def test_save_state(self):
+        mock = self.MockAbstractIterativeStatistics(dim= 10)
+
+        data = np.ones(10)
+        mock.increment(data)
+        state = mock.save_state()
+        mock_ft = self.MockAbstractIterativeStatistics(dim= 10, state=state)
+        mock_ft.increment(data)
+        self.assertListEqual(list(np.ones(10)*2.), list(mock_ft.get_stats()))
 

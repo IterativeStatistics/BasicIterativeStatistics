@@ -8,12 +8,13 @@ class AbstractIterativeStatistics(ABC):
         A basic abstract class to compute iteratives statistics.
     """
     def __init__(self, dim:int, state: object = None):
+        self.dimension = dim
         if state is None :
             self.state = np.zeros(dim)
             self.iteration = 0
         else :
             self.load_from_state(state)
-        self.dimension = dim
+        
 
     @abstractmethod
     def increment(self, data : np.array):
