@@ -44,7 +44,7 @@ In this repository, we implement the following basic statistics:
 - Extrema (see examples [here](./tests/unit/test_IterativeExtrema.py))
 - Covariance (see examples [here](./tests/unit/test_IterativeCovariance.py))
 - Threshold (see examples [here](tests/unit/test_IterativeThreshold.py)) (count the number of threshold exceedances).
-- Quantile (see examples [here](tests/unit/test_IterativeQuantile.py))
+- Quantile (see examples [here](tests/unit/test_IterativeQuantile.py)): this statistics is still a work in progress and must be use with care!
 
 *About the quantiles*: Following [[4]](#4), we implements the Robbins-Monro (RM) algorithm for quantile estimation. The tuning parameters of this algorithm have been studied (through intensive numerical tests). In the implemented algorithm, the final number of iterations (i.e., the number of runs of the computer model) N is a priori fixed, which is a classical way of dealing with uncertainty quantization problems.
 
@@ -58,6 +58,24 @@ NB: This package contains also useful methods for performing iterative statistic
 - Shifted dot product (see example [here](./tests/unit/test_IterativeDotProduct.py))
 - Shifted mean (see example [here](./tests/unit/test_IterativeMean.py))
 
+
+### Fault-Tolerance 
+For each statistics class, we implement a **save_state()** and **load_from_state()** methods to respectively save the current state and create a new object of type IterativeStatistics from a state object (a python dictionary).
+
+These methods can be used as follows (as example):
+```python
+iterativeMean = IterativeMean(dim=1, state=state)
+
+# ... Do some computations
+
+# Save the current state
+state_obj = iterativeMean.save_state() 
+
+# Reload an IterativeMean object of state state_obj
+iterativeMean_reload = IterativeMean(dim=1, state=state_obj)
+```
+
+NB: the methods **save_state()** and  **load_from_state()** are not available yet for the quantile and Saltelli Sobol indices. This is still a work in progress.
 
 ### Examples
 
