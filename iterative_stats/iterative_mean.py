@@ -14,13 +14,15 @@ class IterativeMean(AbstractIterativeStatistics):
         self.state += (data - self.state) / float(self.iteration)
         logger.debug(f'increment= {self.increment}, mean= {self.state}')
 
+
 class IterativeShiftedMean(AbstractIterativeStatistics):
     """
         Iterative Mean with a shift in the data
     """
-    def __init__(self, dim : int = 1):
-        super().__init__(dim)
+    def __init__(self, dim : int = 1, state: object = None):
         self.previous_shift = None
+        super().__init__(dim, state)
+
 
     def increment(self, data, shift: np.array):
         self.iteration += 1
@@ -33,3 +35,18 @@ class IterativeShiftedMean(AbstractIterativeStatistics):
 
         # update the shift
         self.previous_shift = copy.deepcopy(shift)
+
+    def save_state(self):
+        """
+            An abstract method to implement. It save the current state of the objects.
+        """
+        state = super().save_state()
+        state['previous_shift'] = self.previous_shift
+        return state
+
+    def load_from_state(self, state: object):
+        """
+            It load the current state of the object.
+        """
+        super().load_from_state(state)
+        self.previous_shift = state.get('previous_shift', None)

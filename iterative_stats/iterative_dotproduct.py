@@ -8,12 +8,14 @@ from iterative_stats.utils.logger import logger
 from iterative_stats.utils.dot_prod import multi_dim_dotproduct
 
 class IterativeDotProduct(AbstractIterativeStatistics):
-    def __init__(self, dim : int = 1, iterative_shifted_mean_1 : IterativeShiftedMean = None, iterative_shifted_mean_2 : IterativeShiftedMean = None):
+    def __init__(self, dim : int = 1, iterative_shifted_mean_1 : IterativeShiftedMean = None, 
+                        iterative_shifted_mean_2 : IterativeShiftedMean = None, state: object = None):
         """
             Compute iteratively the formula sum_k=0:N (A_k - shift_N)(B_k - shift_N)/(N-1)
             iterative_shifted_mean_1 (IterativeShiftedMean) : add an external iterative shifted mean. If it is not None, the mean will not be updated into this class
         """
-        super().__init__(dim)
+        self.previous_shift = None
+
         if iterative_shifted_mean_1 is None :
             self.iterative_shifted_mean_1 = IterativeShiftedMean(dim)
             self.external_mean_1 = False
@@ -28,7 +30,7 @@ class IterativeDotProduct(AbstractIterativeStatistics):
             self.iterative_shifted_mean_2 = iterative_shifted_mean_2
             self.external_mean_2 = True
 
-        self.previous_shift = None
+        super().__init__(dim, state)
         self.data_1 = None
         self.data_2 = None
 
@@ -71,3 +73,29 @@ class IterativeDotProduct(AbstractIterativeStatistics):
 
     def get_mean_2(self):
         return self.iterative_shifted_mean_2.get_stats()
+
+    def save_state(self):
+        """
+            An abstract method to implement. It save the current state of the objects.
+        """
+        state = super().save_state()
+        state['previous_shift'] = self.previous_shift
+        if not self.external_mean_1 :
+            state['external_mean_1'] = self.iterative_shifted_mean_1.save_state()
+        if not self.external_mean_2 :
+            state['external_mean_2'] = self.iterative_shifted_mean_2.save_state()
+        return state
+        
+
+    def load_from_state(self, state: object):
+        """
+            It load the current state of the object.
+        """
+        super().load_from_state(state)
+        self.previous_shift = state.get('previous_shift')
+        if state.get('external_mean_1', None) is not None :
+            self.external_mean_1 = False
+            self.iterative_shifted_mean_1 = IterativeShiftedMean(self.dimension, state.get('external_mean_1'))
+        if state.get('external_mean_2', None) is not None :
+            self.external_mean_2 = False
+            self.iterative_shifted_mean_2 = IterativeShiftedMean(self.dimension, state.get('external_mean_2'))
