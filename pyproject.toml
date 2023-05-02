@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "iterative_stats"
-version = "0.0.3"
+version = "0.0.4"
 description = "This package implements iterative algorithms to compute some basics statistics"
 authors = ['Frederique Robin']
 readme = "README.md"
