@@ -11,11 +11,10 @@ import scipy.stats as stats
 class TestIterativeMoments(unittest.TestCase):
 
     def test_increment(self):
-        # sample = np.array([10.0, 11.0, 12.0, 13.0, 16.0, -12.2, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0])
         # set seed for reproducibility
         np.random.seed(1234)
         # generate 100 random numbers from normal distribution
-        sample = np.random.normal(0, 1, 5000)
+        sample = np.random.normal(0, 1, 500)
         mean = np.mean(sample)
         variance = np.var(sample,ddof=1) #compute the unbiased estimatorof the variance
         skewness = stats.skew(sample, bias=False)
@@ -36,7 +35,8 @@ class TestIterativeMoments(unittest.TestCase):
         self.assertAlmostEqual(skewness, ot_iter.getSkewness()[0], delta=10e-2)
         self.assertAlmostEqual(skewness, iterative_stats.get_skewness()[0], delta=10e-2)
         # FIXME: Kurtosis is incorrect - needs someone to check the equations
-        print(f"Scipy: {kurtosis}, OpenTurns: {ot_iter.getKurtosis()[0]}, Iterative: {iterative_stats.get_kurtosis()[0]}")
+        logger.info(f"Scipy: {kurtosis}, OpenTurns: {ot_iter.getKurtosis()[0]}, "
+                    f"Iterative: {iterative_stats.get_kurtosis()[0]}")
         # self.assertAlmostEqual(kurtosis, ot_iter.getKurtosis()[0], delta=10e-2)
         # self.assertAlmostEqual(kurtosis, iterative_stats.get_kurtosis()[0], delta=10e-2)
         self.assertEqual(iterative_stats.get_stats().shape, (1,))

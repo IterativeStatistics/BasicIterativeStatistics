@@ -22,7 +22,6 @@ class AbstractExperiment(ABC):
             else:
                 sample = sample_A
             yield sample
-        
 
     def pick_freeze(self, sample_A: np.array, sample_B : np.array) -> np.array:
         """
