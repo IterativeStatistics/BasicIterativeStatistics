@@ -16,9 +16,12 @@ class AbstractExperiment(ABC):
     def generator(self) :
         for _ in range(self.nb_sim):
             sample_A = self.draw()
-            sample_B = self.draw()
-            pick_freeze_sample = self.pick_freeze(sample_A[0], sample_B[0])
-            yield pick_freeze_sample
+            if self.apply_pick_freeze:
+                sample_B = self.draw()
+                sample = self.pick_freeze(sample_A, sample_B)
+            else:
+                sample = sample_A
+            yield sample
         
 
     def pick_freeze(self, sample_A: np.array, sample_B : np.array) -> np.array:
