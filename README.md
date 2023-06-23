@@ -38,25 +38,15 @@ The python package **iterative_stats** free software distributed under the BSD 3
 
 ## Iterative statistics
 
-In this repository, we implement the following basic statistics:
+In this repository, we implement the following statistics:
 - Mean (see examples [here](./tests/unit/test_IterativeMean.py))
 - Variance (see examples [here](./tests/unit/test_IterativeVariance.py))
+- Higher-order moments, skewness and kurtosis (see examples [here](./tests/unit/test_IterativeMoments.py))
 - Extrema (see examples [here](./tests/unit/test_IterativeExtrema.py))
 - Covariance (see examples [here](./tests/unit/test_IterativeCovariance.py))
 - Threshold (see examples [here](tests/unit/test_IterativeThreshold.py)) (count the number of threshold exceedances).
 - Quantile (see examples [here](tests/unit/test_IterativeQuantile.py)): this statistics is still a work in progress and must be use with care!
-
-*About the quantiles*: Following [[4]](#4), we implements the Robbins-Monro (RM) algorithm for quantile estimation. The tuning parameters of this algorithm have been studied (through intensive numerical tests). In the implemented algorithm, the final number of iterations (i.e., the number of runs of the computer model) N is a priori fixed, which is a classical way of dealing with uncertainty quantization problems.
-
-*About the Sobol indices*:
-It also contains more advanced statistics: the Sobol indices. For each method (Martinez, Saltelli and Jansen), the first order indices, computed iteratively, as well as the total orders are available. We also include the second ordre for the Martinez and Jansen methods (the second order for the Saltelli method is still a work in progress).
-- Pearson coefficient (Martinez): examples are available [here](tests/unit/sensitivity/test_IterativeSensitivityMartinez.py).
-- Jansen method: examples are available [here](tests/unit/sensitivity/test_IterativeSensitivityJansen.py).
-- Saltelli method: examples are available [here](tests/unit/sensitivity/test_IterativeSensitivityJansen.py).
-
-NB: This package contains also useful methods for performing iterative statistics computations such as shift averaging and shift dot product computation:
-- Shifted dot product (see example [here](./tests/unit/test_IterativeDotProduct.py))
-- Shifted mean (see example [here](./tests/unit/test_IterativeMean.py))
+- Sobol indices
 
 
 *About the Iterative higher-order moments* The iterative higher order moments are available as `IterativeMoments` and permit a user to compute higher-order moments up to the 4th order (including skewness and kurtosis). The implementation follows [[5]](#5),
@@ -64,6 +54,17 @@ NB: This package contains also useful methods for performing iterative statistic
 !!! danger "Beware of 4th order"
     The 4th order (kurtosis) does not pass our tests comparing to Scipy non-iterative Kurtosis calculations. While this is something to beware of, we also test the popular library OpenTurns, which also fails to pass the same test and uses the same equation as us. Follow discussion [here](https://github.com/openturns/openturns/issues/2345).
 
+*About the quantiles*: Following [[4]](#4), we implements the Robbins-Monro (RM) algorithm for quantile estimation. The tuning parameters of this algorithm have been studied (through intensive numerical tests). In the implemented algorithm, the final number of iterations (i.e., the number of runs of the computer model) N is a priori fixed, which is a classical way of dealing with uncertainty quantization problems.
+
+*About the Sobol indices*:
+It also contains more advanced statistics: the Sobol indices. For each method (Martinez, Saltelli and Jansen), the first order indices, computed iteratively, as well as the total orders are available. We also include the second order for the Martinez and Jansen methods (the second order for the Saltelli method is still a work in progress).
+- Pearson coefficient (Martinez): examples are available [here](tests/unit/sensitivity/test_IterativeSensitivityMartinez.py).
+- Jansen method: examples are available [here](tests/unit/sensitivity/test_IterativeSensitivityJansen.py).
+- Saltelli method: examples are available [here](tests/unit/sensitivity/test_IterativeSensitivityJansen.py).
+
+NB: This package contains also useful methods for performing iterative statistics computations such as shift averaging and shift dot product computation:
+- Shifted dot product (see example [here](./tests/unit/test_IterativeDotProduct.py))
+- Shifted mean (see example [here](./tests/unit/test_IterativeMean.py))
 
 ### Fault-Tolerance 
 For each statistics class, we implement a **save_state()** and **load_from_state()** methods to respectively save the current state and create a new object of type IterativeStatistics from a state object (a python dictionary).
