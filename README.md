@@ -59,6 +59,12 @@ NB: This package contains also useful methods for performing iterative statistic
 - Shifted mean (see example [here](./tests/unit/test_IterativeMean.py))
 
 
+*About the Iterative higher-order moments* The iterative higher order moments are available as `IterativeMoments` and permit a user to compute higher-order moments up to the 4th order (including skewness and kurtosis). The implementation follows [[5]](#5),
+
+!!! danger "Beware of 4th order"
+    The 4th order (kurtosis) does not pass our tests comparing to Scipy non-iterative Kurtosis calculations. While this is something to beware of, we also test the popular library OpenTurns, which also fails to pass the same test and uses the same equation as us. Follow discussion [here](https://github.com/openturns/openturns/issues/2345).
+
+
 ### Fault-Tolerance 
 For each statistics class, we implement a **save_state()** and **load_from_state()** methods to respectively save the current state and create a new object of type IterativeStatistics from a state object (a python dictionary).
 
@@ -130,3 +136,5 @@ The implementation of the iterative formulas is based on the following papers:
 <a id="3">[3]</a> Philippe Pébay. 2008. Formulas for robust, one-pass parallel computation of covariances and arbitrary-order statistical moments. Sandia Report SAND2008-6212, Sandia National Laboratories 94 (2008).
 
 <a id="4">[4]</a> Iooss, Bertrand, and Jérôme Lonchampt. "Robust tuning of Robbins-Monro algorithm for quantile estimation-Application to wind-farm asset management." ESREL 2021. 2021.
+
+<a id="4">[5]</a>  Meng, Xiangrui. "Simpler online updates for arbitrary-order central moments." arXiv preprint arXiv:1510.04923 (2015). 
