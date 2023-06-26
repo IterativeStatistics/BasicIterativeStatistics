@@ -124,7 +124,7 @@ second_order = sensitivity_instance.getFirstOrderIndices()
 print(f" Second Order Sobol indices (Martinez method): {first_order}")
 ```
 
-NB: The computation of Sobol Indices requires the preparation of a specific experimental design based on the pick-freeze method (see [[1]](#1) for details). This method has been implemented into the class [**AbstractExperiment**](experimental_design/experiment.py) and some examples can be found [here](tests/unit/experimental_design/test_experiments.py).
+NB: The computation of Sobol Indices requires the preparation of a specific experimental design based on the pick-freeze method (see [[1]](#1) for details). This method has been implemented into the class [**AbstractExperiment**](iterative_stats/experimental_design/experiment.py) and some examples can be found [here](tests/unit/experimental_design/test_experiments.py).
 
 
 ## References 

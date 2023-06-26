@@ -1,6 +1,6 @@
 from scipy.stats import qmc
 
-from experimental_design.experiment import AbstractExperiment
+from iterative_stats.experimental_design.experiment import AbstractExperiment
 
 class Uniform3D(AbstractExperiment):
     """
