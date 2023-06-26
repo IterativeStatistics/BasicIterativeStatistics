@@ -18,9 +18,9 @@ class AbstractExperiment(ABC):
             sample_A = self.draw()
             if self.apply_pick_freeze:
                 sample_B = self.draw()
-                sample = self.pick_freeze(sample_A, sample_B)
+                sample = self.pick_freeze(sample_A[0], sample_B[0])
             else:
-                sample = sample_A
+                sample = sample_A[0]
             yield sample
 
     def pick_freeze(self, sample_A: np.array, sample_B : np.array) -> np.array:

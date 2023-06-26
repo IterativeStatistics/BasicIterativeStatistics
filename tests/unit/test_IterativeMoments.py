@@ -18,7 +18,7 @@ class TestIterativeMoments(unittest.TestCase):
         mean = np.mean(sample)
         variance = np.var(sample,ddof=1) #compute the unbiased estimatorof the variance
         skewness = stats.skew(sample, bias=False)
-        kurtosis = stats.kurtosis(sample, bias=False)
+        kurtosis = stats.kurtosis(sample, bias=False, fisher=False)
 
         iterative_stats = IterativeMoments(4, dim = 1)
         ot_iter = ot.IterativeMoments(4, 1)
@@ -35,8 +35,8 @@ class TestIterativeMoments(unittest.TestCase):
         self.assertAlmostEqual(skewness, ot_iter.getSkewness()[0], delta=10e-2)
         self.assertAlmostEqual(skewness, iterative_stats.get_skewness()[0], delta=10e-2)
         # FIXME: Kurtosis is incorrect - needs someone to check the equations
-        logger.info(f"Scipy: {kurtosis}, OpenTurns: {ot_iter.getKurtosis()[0]}, "
-                    f"Iterative: {iterative_stats.get_kurtosis()[0]}")
-        # self.assertAlmostEqual(kurtosis, ot_iter.getKurtosis()[0], delta=10e-2)
-        # self.assertAlmostEqual(kurtosis, iterative_stats.get_kurtosis()[0], delta=10e-2)
+        # logger.info(f"Scipy: {kurtosis}, OpenTurns: {ot_iter.getKurtosis()[0]}, "
+        #             f"Iterative: {iterative_stats.get_kurtosis()[0]}")
+        self.assertAlmostEqual(kurtosis, ot_iter.getKurtosis()[0], delta=10e-2)
+        self.assertAlmostEqual(kurtosis, iterative_stats.get_kurtosis()[0], delta=10e-2)
         self.assertEqual(iterative_stats.get_stats().shape, (1,))

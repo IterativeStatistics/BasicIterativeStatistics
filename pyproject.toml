@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "iterative_stats"
-version = "0.0.4"
+version = "0.0.6"
 description = "This package implements iterative algorithms to compute some basics statistics"
 authors = ['Frederique Robin']
 readme = "README.md"
@@ -22,6 +22,9 @@ autopep8 = "1.6.0"
 openturns = "1.19"
 scipy = "~1.8.0"
 
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.4.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
