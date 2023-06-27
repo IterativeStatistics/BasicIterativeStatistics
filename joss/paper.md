@@ -4,13 +4,22 @@ tags:
   - Python
   - iterative statistics
 authors:
-  - name: Frédérique Robin, ...
+  - name: Frédérique Robin, Alejandro Ribes, Robert Caulk
     orcid: 0009-0005-2141-7168
     equal-contrib: false
     affiliation: "1" # (Multiple affiliations must be quoted)
+    corresponding: true # (This is how to denote the corresponding author)
+  - name: Alejandro Ribes
+    equal-contrib: false
+    affiliation: "1" # (Multiple affiliations must be quoted)
+  - name: Robert Caulk
+    equal-contrib: false
+    affiliation: "2" # (Multiple affiliations must be quoted)
 affiliations:
  - name: EDF R&D, Saclay
    index: 1
+ - name: INRIA, Grenobles
+   index: 2
 date: 27 June 2023
 bibliography: paper.bib
 
