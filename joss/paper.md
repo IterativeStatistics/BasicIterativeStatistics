@@ -4,7 +4,7 @@ tags:
   - Python
   - iterative statistics
 authors:
-  - name: Frédérique Robin, Alejandro Ribes, Robert Caulk
+  - name: Frédérique Robin
     orcid: 0009-0005-2141-7168
     equal-contrib: false
     affiliation: "1" # (Multiple affiliations must be quoted)
