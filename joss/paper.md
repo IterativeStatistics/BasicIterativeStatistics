@@ -15,6 +15,9 @@ authors:
   - name: Robert Caulk
     equal-contrib: false
     affiliation: "2" # (Multiple affiliations must be quoted)
+  - name: Marc Schouler
+    equal-contrib: false
+    affiliation: "2" # (Multiple affiliations must be quoted)
 affiliations:
  - name: EDF R&D, Saclay
    index: 1
@@ -87,6 +90,7 @@ iterativeMean_reload = IterativeMean(dim=1, state=state_obj)
 
 # Acknowledgements
 
+We thanks Bruno Raffin (INRIA), Michael Baudin (EDF) and Joseph Mure (EDF) for following this work.
 
 
 # References
