@@ -36,7 +36,7 @@ This library provides a fault tolerant Python package, called `Iterative-stats`,
 
 # About the implemented methods
 
-The implemented methods are: mean, variance,  higher-order moments (skewness and kurtosis), extrema, covariance, threshold (i.e. count the number of threshold exceedances) and Sobol indices. It also implements exploratory work on quantile calculation based on the work of [@iooss:hal-03191621].
+The implemented methods are: mean, variance,  higher-order moments (skewness and kurtosis), extrema, covariance, threshold (i.e. count the number of threshold exceedances) and Sobol indices. In particular, the library contains corrected formula compared to the original implementation made in [@Melissa] and some improvements (e.g. second order sobol index). It also implements exploratory work on quantile calculation based on the work of [@iooss:hal-03191621].
 
 Specifically, the iterative higher-order moments are based on [@Meng] work. As far as Sobol indices, three methods are implemented: Pearson coefficient (Martinez [@Martinez], Saltelli and Jansen) for the first and total order indices. These implimentation was validated by comparing it against the (non-iterative) statistics implemented in [@OpenTURNS]. We also implement the second order Sobol indices (for solely Pearson coefficient and Jansen methods).
 
