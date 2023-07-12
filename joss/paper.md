@@ -30,17 +30,16 @@ bibliography: paper.bib
 
 # Summary
 
-Global sensitivity analysis is an important step for analyzing and validating numerical simulations. One classical approach consists in computing statistics on the outputs from well-chosen multiple simulation runs. Simulation results are stored to disk and statistics are computed postmortem. Even if supercomputers enable to run large studies, scientists are constrained to run low resolution simulations with a limited number of probes to keep the amount of intermediate storage manageable. In this work we propose a fault tolerant Python package that enables high resolution global sensitivity analysis at large scale. Statistics can thus be updated on-the-fly as soon as the in transit parallel server receives results from one of the running simulations.
+Global sensitivity analysis is an important step for analyzing and validating numerical simulations. The classical approach consists in collecting outputs on disk from multiple-simulations and then computing computing statistics after completion. Even though supercomputers continually enable larger simulations, scientists are constrained by slow disk I/O, which typically means that simulations should be run at a low resolution with a limited number of probes.
 
 # Statement of need
-`Iterative-stats` is a Python package that compute standard statistics (e.g. mean, variance, etc.) on-the-fly with a controled intermediate storage.
 
-`Iterative-stats` was designed to be used independently from computation parallelization frameworks. It has already been used in [@Melissa] and will also soon be included in [@Salome]. This package is also a playground for more robust integrations in packages such as [@OpenTURNS] (for instance, Sobol indices).
+This library provides a fault tolerant Python package, called `Iterative-stats`, that enables high resolution global sensitivity analysis at large scale via on-the-fly statistics updates and a controlled intermediate storage. `Iterative-stats` was designed to be used independently from computation parallelization frameworks, which enables high bandwidth applications such as the example used in [@Melissa]. It will also soon be released with [@Salome]. Beyond existing applications, this package is also a playground for more experimental integrations compared to heavier and more established packages such as [@OpenTURNS] (for instance, Sobol indices).
 
 
 # About the implemented methods
 
-The implemented method are : mean, variance,  higher-order moments (skewness and kurtosis), extrema, covariance, threshold (i.e. count the number of threshold exceedances) and Sobol indices. It also implements exploratory work on quantile calculation based on the work of [@iooss:hal-03191621].
+The implemented methods are: mean, variance,  higher-order moments (skewness and kurtosis), extrema, covariance, threshold (i.e. count the number of threshold exceedances) and Sobol indices. It also implements exploratory work on quantile calculation based on the work of [@iooss:hal-03191621].
 
 Specifically, the iterative higher-order moments are based on [@Meng] work. As far as Sobol indices, three methods are implemented: Pearson coefficient (Martinez [@Martinez], Saltelli and Jansen) for the first and total order indices. These implimentation was validated by comparing it against the (non-iterative) statistics implemented in [@OpenTURNS]. We also implement the second order Sobol indices (for solely Pearson coefficient and Jansen methods).
 
@@ -86,6 +85,14 @@ state_obj = iterativeMean.save_state()
 
 # Reload an IterativeMean object of state state_obj
 iterativeMean_reload = IterativeMean(dim=1, state=state_obj)
+```
+
+### Installation
+
+The package is distributed with PyPi and can be installed with:
+
+```bash
+pip install iterative-stats
 ```
 
 # Acknowledgements
