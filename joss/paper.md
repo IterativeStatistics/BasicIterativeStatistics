@@ -12,7 +12,7 @@ authors:
   - name: Alejandro Ribes
     equal-contrib: false
     affiliation: "1" # (Multiple affiliations must be quoted)
-  - name: Robert Caulk
+  - name: Robert Alexander Caulk
     orcid: 0000-0001-5618-8629
     equal-contrib: false
     affiliation: "2" # (Multiple affiliations must be quoted)
