@@ -34,7 +34,7 @@ Global sensitivity analysis is an important step for analyzing and validating nu
 
 # Statement of need
 
-This library provides a fault tolerant Python package, called `Iterative-stats`, that enables high resolution global sensitivity analysis at large scale via on-the-fly statistics updates and a controlled intermediate storage. `Iterative-stats` was designed to be used independently from computation parallelization frameworks, which enables high bandwidth applications such as the example used in [@Melissa]. It will also soon be released with [@Salome]. Beyond existing applications, this package is also a playground for more experimental integrations compared to heavier and more established packages such as [@OpenTURNS] (for instance, Sobol indices).
+This library provides a fault tolerant Python package, called `Iterative-stats`, that enables high resolution global sensitivity analysis at large scale via on-the-fly statistics updates and a controlled intermediate storage. `Iterative-stats` was designed to be used independently from computation parallelization frameworks, which enables high bandwidth applications such as the example used in [@Schouler2023]. It will also soon be released with [@Salome]. Beyond existing applications, this package is also a playground for more experimental integrations compared to heavier and more established packages such as [@OpenTURNS] (for instance, Sobol indices).
 
 
 # About the implemented methods
