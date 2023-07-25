@@ -49,8 +49,4 @@ recursive = true
 aggressive = 3
 
 
-[project.urls]
-"Homepage" = "https://github.com/IterativeStatistics/BasicIterativeStatistics"
-"Bug Tracker" = "https://github.com/IterativeStatistics/BasicIterativeStatistics/issues"
-
 [tool.setuptools_scm]
