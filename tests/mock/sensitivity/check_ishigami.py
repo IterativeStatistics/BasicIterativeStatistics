@@ -5,7 +5,7 @@ import time
 
 def check_ishigami(nb_parms, nb_sim, sensitivity_indices, check_sensitivity, second_order: bool = False):
     from tests.mock.ishigami import ishigami 
-    from tests.mock.uniform_3d import Uniform3D
+    from iterative_stats.experimental_design.experiment import Uniform3D
 
     input_sample_generator = Uniform3D(nb_parms = nb_parms, nb_sim = nb_sim, second_order=second_order).generator()
     cpt = 0
@@ -14,7 +14,7 @@ def check_ishigami(nb_parms, nb_sim, sensitivity_indices, check_sensitivity, sec
         try :
 
             input_sample = next(input_sample_generator)
-            output_sample = np.apply_along_axis(ishigami, 1,input_sample)
+            output_sample = ishigami(input_sample)  # np.apply_along_axis(ishigami, 1,input_sample)
             sensitivity_indices.increment(output_sample)
             check_sensitivity.collect(output_sample)
 
@@ -29,7 +29,7 @@ def check_ishigami_multi_dim(nb_parms, nb_sim, sensitivity_indices,
                                 check_sensitivity : object = None, second_order: bool = False, 
                                 dim : int = 1, with_timer: list = []):
     from tests.mock.ishigami import ishigami 
-    from tests.mock.uniform_3d import Uniform3D
+    from iterative_stats.experimental_design.experiment import Uniform3D
 
     input_sample_generator = [Uniform3D(nb_parms = nb_parms, nb_sim = nb_sim, second_order=second_order).generator() for _ in range(dim)]
     cpt = 0
@@ -43,7 +43,7 @@ def check_ishigami_multi_dim(nb_parms, nb_sim, sensitivity_indices,
             outputs = np.zeros((size_output, dim))
             for i in range(dim) :
                 input_sample = next(input_sample_generator[i])                
-                outputs[:, i] = np.apply_along_axis(ishigami, 1,input_sample)
+                outputs[:, i] = ishigami(input_sample)
                 if check_sensitivity is not None :
                     check_sensitivity[i].collect(copy.deepcopy(outputs[:,i]))
             if len(with_timer) > 0 :
