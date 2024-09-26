@@ -38,7 +38,8 @@ class IterativeSensitivityMartinez(IterativeAbstractSensitivity):
             # update first order
             self.covData_BE[p].increment(sample_B,sample_E[p])
             var_prod = np.multiply(self.var_E[p].get_stats(), self.var_B.get_stats())
-            self.pearson_B[:,p] = np.divide(self.covData_BE[p].get_stats(), np.sqrt(var_prod))
+            if var_prod.any() > 0 :
+                self.pearson_B[:,p] = np.divide(self.covData_BE[p].get_stats(), np.sqrt(var_prod))
 
             # update last order
             self.covData_AE[p].increment(sample_A,sample_E[p])
