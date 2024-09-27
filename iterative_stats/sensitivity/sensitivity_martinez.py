@@ -20,8 +20,8 @@ class IterativeSensitivityMartinez(IterativeAbstractSensitivity):
             self.covData_AE = [IterativeCovariance(dim) for _ in range(nb_parms)]
             self.covData_BE = [IterativeCovariance(dim) for _ in range(nb_parms)]
         
-            self.pearson_A = np.zeros((nb_parms, dim))
-            self.pearson_B = np.zeros((nb_parms, dim))
+            self.pearson_A = np.zeros((dim, nb_parms))
+            self.pearson_B = np.zeros((dim, nb_parms))
         
             del self.state
        
@@ -36,16 +36,16 @@ class IterativeSensitivityMartinez(IterativeAbstractSensitivity):
             self.var_E[p].increment(sample_E[p])
 
             # update first order
-            self.covData_BE[p].increment(sample_B, sample_E[p])
+            self.covData_BE[p].increment(sample_B,sample_E[p])
             var_prod = np.multiply(self.var_E[p].get_stats(), self.var_B.get_stats())
             if var_prod.any() > 0 :
-                self.pearson_B[p] = np.divide(self.covData_BE[p].get_stats(), np.sqrt(var_prod))
+                self.pearson_B[:,p] = np.divide(self.covData_BE[p].get_stats(), np.sqrt(var_prod))
 
             # update last order
-            self.covData_AE[p].increment(sample_A, sample_E[p])
+            self.covData_AE[p].increment(sample_A,sample_E[p])
             var_prod = np.multiply(self.var_E[p].get_stats(), self.var_A.get_stats())
             if var_prod.any() > 0 :
-                self.pearson_A[p] = np.divide(self.covData_AE[p].get_stats(), np.sqrt(var_prod))
+                self.pearson_A[:,p] = np.divide(self.covData_AE[p].get_stats(), np.sqrt(var_prod))
            
 
     def getFirstOrderIndices(self) :
@@ -57,7 +57,7 @@ class IterativeSensitivityMartinez(IterativeAbstractSensitivity):
     def _compute_varianceI(self):
         res = np.zeros((self.dimension, self.nb_parms))
         for p in range(self.nb_parms):
-            res[:,p] = np.multiply(self.pearson_B[p],self.var_A.get_stats())
+            res[:,p] = np.multiply(self.pearson_B[:,p],self.var_A.get_stats())
         return res
 
     def _compute_VTi(self):
