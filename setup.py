@@ -23,6 +23,7 @@ setup(
             "openturns>=1.19,<2.0.0",
             "scipy>=1.8.0,<2.0.0",
             "mypy>=1.4.0,<2.0.0",
+            "bump2version>1.0.0"
         ]
     },
     packages=find_packages(),
