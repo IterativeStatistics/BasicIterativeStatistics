@@ -12,7 +12,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.9,<=3.12"
+python = ">=3.9,<3.13"
 pyyaml = ">=6.0"
 numpy = ">=1.19.0,<2.0.0"
 
