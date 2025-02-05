@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="iterative_stats",
-    version="0.1.0",
+    version="0.1.1",
     description="This package implements iterative algorithms to compute some basics statistics",
     author="Frederique Robin",
     license="BSD License",
