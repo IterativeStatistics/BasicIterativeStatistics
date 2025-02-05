@@ -30,6 +30,7 @@ class IterativeSensitivityMartinez(IterativeAbstractSensitivity):
         sample_A = data[0]
         sample_B = data[1]
         sample_E = data[2:(2 + self.nb_parms)]
+        self.var_A.increment(sample_A)
         self.var_B.increment(sample_B)
 
         for p in range(self.nb_parms):
