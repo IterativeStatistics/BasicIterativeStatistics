@@ -11,18 +11,19 @@ setup(
         "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
     ],
-    python_requires=">=3.8,<3.11",
+    python_requires=">=3.9,<3.13",
     install_requires=[
-        "pyyaml==6.0",
+        "pyyaml>=6.0",
         "numpy>=1.19.0,<2.0.0",
     ],
     extras_require={
         "dev": [
-            "pytest>=6.2.1,<7.0.0",
+            "pytest>=6.2.1",
             "autopep8==1.6.0",
-            "openturns==1.19",
+            "openturns>=1.19,<2.0.0",
             "scipy>=1.8.0,<2.0.0",
             "mypy>=1.4.0,<2.0.0",
+            "bump2version>1.0.0"
         ]
     },
     packages=find_packages(),
