@@ -11,7 +11,7 @@ setup(
         "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
     ],
-    python_requires=">=3.8,<3.12",
+    python_requires=">=3.9,<=3.12",
     install_requires=[
         "pyyaml>=6.0",
         "numpy>=1.19.0,<2.0.0",
