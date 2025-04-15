@@ -3,7 +3,7 @@ import copy
 
 import numpy as np
 import openturns as ot
-from tests.mock.uniform_3d import Uniform3D
+from iterative_stats.experimental_design.experiment import Uniform3D
 
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -25,9 +25,9 @@ class TestExperimentalDesign(unittest.TestCase):
             try :
                 sample = next(gen)
                 for i in range(self.nb_parms):
-                    self.assertTrue((sample[:,i] <=self.u_bounds[i]).any())
-                    self.assertTrue((sample[:,i] >= self.l_bounds[i]).any())
-                self.assertEqual(len(sample), (2 +  self.nb_parms))
+                    self.assertTrue((sample[i] <=self.u_bounds[i]).any())
+                    self.assertTrue((sample[i] >= self.l_bounds[i]).any())
+                self.assertEqual(len(sample), (self.nb_parms))
             except StopIteration:
                 break 
 
@@ -40,9 +40,9 @@ class TestExperimentalDesign(unittest.TestCase):
             try :
                 sample = next(gen)
                 for i in range(self.nb_parms):
-                    self.assertTrue((sample[:,i] <=self.u_bounds[i]).any())
-                    self.assertTrue((sample[:,i] >= self.l_bounds[i]).any())
-                self.assertEqual(len(sample), (2 + 2 * self.nb_parms))
+                    self.assertTrue((sample[i] <=self.u_bounds[i]).any())
+                    self.assertTrue((sample[i] >= self.l_bounds[i]).any())
+                self.assertEqual(len(sample), (self.nb_parms))
             except StopIteration:
                 break 
 

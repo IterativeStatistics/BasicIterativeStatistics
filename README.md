@@ -98,7 +98,7 @@ second_order = True # a boolean to compute the second order or not
 sensitivity_instance = IterativeSensitivityMethod(dim = dim, nb_parms = nb_parms, second_order = second_order)
 
 # Generate an experimental design
-from tests.mock.uniform_3d import Uniform3D
+from iterative_stats.experimental_design.experiment import Uniform3D
 input_sample_generator = Uniform3D(nb_parms = nb_parms, nb_sim = nb_sim, second_order=second_order).generator()
 
 # Load a function (here ishigami function)
@@ -108,7 +108,7 @@ while True :
         # Generate the next sample
         input_sample = next(input_sample_generator)
         # Apply ishigami function
-        output_sample = np.apply_along_axis(ishigami, 1,input_sample)
+        output_sample = ishigami(input_sample)
         # Update the sensitivity instance
         sensitivity_instance.increment(output_sample) 
     except StopIteration :
