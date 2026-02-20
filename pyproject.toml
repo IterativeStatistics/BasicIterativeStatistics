@@ -1,6 +1,10 @@
+[build-system]
+requires = ["poetry-core>=1.8.0"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.poetry]
 name = "iterative_stats"
-version = "0.1.1"
+version = "0.1.2"
 description = "This package implements iterative algorithms to compute some basics statistics"
 authors = ['Frederique Robin']
 readme = "README.md"
@@ -12,23 +16,16 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.13"
+python = ">=3.11,<3.15"
 pyyaml = ">=6.0"
-numpy = ">=1.19.0,<2.0.0"
-
-[tool.poetry.dev-dependencies]
-pytest = ">=6.2.1"
-autopep8 = "1.6.0"
-openturns = ">=1.19,<2.0.0"
-scipy = ">=1.8.0,<2.0.0"
-
+numpy = ">=1.26.0,<3.0.0"
 
 [tool.poetry.group.dev.dependencies]
+pytest = ">=6.2.1"
+autopep8 = "1.6.0"
+openturns = ">=1.25,<2.0.0"
+scipy = ">=1.16.1,<2.0.0"
 mypy = ">=1.4.0,<2.0.0"
-
-[build-system]
-requires = ["poetry-core>1.2.0"]
-build-backend = "poetry.core.masonry.api"
 
 
 [tool.pytest.ini_options]
@@ -47,6 +44,3 @@ ignore = "E501,W6"  # or ["E501", "W6"]
 in-place = true
 recursive = true
 aggressive = 3
-
-
-[tool.setuptools_scm]

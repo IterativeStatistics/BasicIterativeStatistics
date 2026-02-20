@@ -15,20 +15,20 @@ class IterativeMoments(AbstractIterativeStatistics):
         self.max_order: int = max_order
 
         # Cascading moments depending on the requested max_order
-        self.m1: npt.NDArray[np.float_] = np.zeros(self.dimension)
+        self.m1: npt.NDArray[np.float64] = np.zeros(self.dimension)
         if self.max_order > 1:
-            self.m2: npt.NDArray[np.float_] = np.zeros(self.dimension)
+            self.m2: npt.NDArray[np.float64] = np.zeros(self.dimension)
             self.theta2 = np.zeros(np.size(self.dimension))
         if self.max_order > 2:
-            self.m3: npt.NDArray[np.float_] = np.zeros(self.dimension)
+            self.m3: npt.NDArray[np.float64] = np.zeros(self.dimension)
             self.theta3 = np.zeros(np.size(self.dimension))
         if self.max_order > 3:
-            self.m4: npt.NDArray[np.float_] = np.zeros(self.dimension)
+            self.m4: npt.NDArray[np.float64] = np.zeros(self.dimension)
             self.theta4 = np.zeros(self.dimension)
         if self.max_order > 4:
             raise NotImplementedError("Moments of order > 4 not implemented")
 
-    def increment(self, np_data: npt.NDArray[np.float_]):
+    def increment(self, np_data: npt.NDArray[np.float64]):
 
         self.iteration += 1
         delta = self.get_delta(self.m1, np_data)
@@ -45,7 +45,7 @@ class IterativeMoments(AbstractIterativeStatistics):
             self.m4 += -4.0 * delta_n * self.m3 - 6.0 * delta_n_2 * self.m2 \
                 + delta * ( delta * delta_2 - delta_n * delta_n_2 )
 
-    def get_delta(self, moment: npt.NDArray[np.float_], np_data):
+    def get_delta(self, moment: npt.NDArray[np.float64], np_data):
         return np_data - moment
 
     def get_mean(self):

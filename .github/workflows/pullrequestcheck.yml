@@ -8,32 +8,29 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.12", "3.11", "3.10"]
-        poetry-version: ["1.8.5"]
+        python-version: ["3.14", "3.13", "3.12", "3.11"]
 
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install poetry ${{ matrix.poetry-version }}
-      run: |
-        python -m ensurepip
-        python -m pip install --upgrade pip
-        python -m pip install poetry==${{ matrix.poetry-version }}
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: latest
+        virtualenvs-in-project: true
 
-    - name: View poetry --help
-      run: poetry --help
+    - name: Verify Poetry installation
+      run: poetry --version
 
     - name: Install dependencies
-      shell: bash
-      run: python -m poetry install
+      run: poetry install
 
-    - name: Test with pytest
-      run: |
-        python -m poetry run python -m pytest -v tests
+    - name: Run tests with pytest
+      run: poetry run pytest -v tests
