@@ -1,4 +1,5 @@
 # BasicIterativeStatistics
+
 In this repository, basic iterative statistics are implemented.
 
 ## Installation
@@ -10,27 +11,50 @@ The python package **iterative_stats** is available on [pypi](https://pypi.org/p
 
 Otherwise, one can clone the following repository:
 ```
-    git clone https://github.com/IterativeStatistics/BasicIterativeStatistics.git
+git clone https://github.com/IterativeStatistics/BasicIterativeStatistics.git
 ```
 
 To install the environnement, please use poetry:
 
 ```
-    poetry install
+poetry install
 ```
 
 NB: One can also use a conda or python environment. The list of dependencies are available into the [pyproject.toml](pyproject.toml) file.
 
 To run the tests:
 ```
-    poetry run pytest tests
+poetry run pytest tests
 ```
 
 or for a specific test (ex: tests/unit/test_IterativeMean.py)
 
 ```
-    poetry run pytest tests/unit/test_IterativeMean.py
+poetry run pytest tests/unit/test_IterativeMean.py
 ```
+
+## Quick Example
+
+```python
+import numpy as np
+from iterative_stats import IterativeMean, IterativeVariance
+
+# Compute mean iteratively
+mean = IterativeMean(dim=1)
+for value in [1.0, 2.0, 3.0, 4.0, 5.0]:
+    mean.increment(np.array([value]))
+
+print(mean.get_stats())  # Output: [3.0]
+
+# Compute variance iteratively
+variance = IterativeVariance(dim=1)
+for value in [1.0, 2.0, 3.0, 4.0, 5.0]:
+    variance.increment(np.array([value]))
+
+print(variance.get_stats())  # Output: [2.5]
+```
+
+For more examples, see the [tests directory](./tests/unit/).
 
 ## License
 
@@ -83,49 +107,6 @@ iterativeMean_reload = IterativeMean(dim=1, state=state_obj)
 ```
 
 NB: the methods **save_state()** and  **load_from_state()** are not available yet for the quantile and Saltelli Sobol indices. This is still a work in progress.
-
-### Examples
-
-Here are some examples of how to use **iterative-stats** to compute Sobol index iteratively.
-
-```python
-from iterative_stats.sensitivity.sensitivity_martinez import IterativeSensitivityMartinez as IterativeSensitivityMethod
-dim = 10 #field size
-nb_parms = 3 #number of parameters
-second_order = True # a boolean to compute the second order or not
-
-# Create an instance of the object IterativeSensitivityMethod
-sensitivity_instance = IterativeSensitivityMethod(dim = dim, nb_parms = nb_parms, second_order = second_order)
-
-# Generate an experimental design
-from tests.mock.uniform_3d import Uniform3D
-input_sample_generator = Uniform3D(nb_parms = nb_parms, nb_sim = nb_sim, second_order=second_order).generator()
-
-# Load a function (here ishigami function)
-from tests.mock.ishigami import ishigami
-while True :
-    try :
-        # Generate the next sample
-        input_sample = next(input_sample_generator)
-        # Apply ishigami function
-        output_sample = np.apply_along_axis(ishigami, 1,input_sample)
-        # Update the sensitivity instance
-        sensitivity_instance.increment(output_sample) 
-    except StopIteration :
-        break
-
-first_order = sensitivity_instance.getFirstOrderIndices()
-print(f" First Order Sobol indices (Martinez method): {first_order}")
-
-total_order = sensitivity_instance.getFirstOrderIndices()
-print(f" Total Order Sobol indices (Martinez method): {first_order}")
-
-second_order = sensitivity_instance.getFirstOrderIndices()
-print(f" Second Order Sobol indices (Martinez method): {first_order}")
-```
-
-NB: The computation of Sobol Indices requires the preparation of a specific experimental design based on the pick-freeze method (see [[1]](#1) for details). This method has been implemented into the class [**AbstractExperiment**](iterative_stats/experimental_design/experiment.py) and some examples can be found [here](tests/unit/experimental_design/test_experiments.py).
-
 
 ## References 
 The implementation of the iterative formulas is based on the following papers:
