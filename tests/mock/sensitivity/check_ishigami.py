@@ -77,7 +77,7 @@ def ishigami_with_openturns(dim, nb_parms, nb_sim, sensitivity_name, check_sensi
     # Create the model and input distribution
     formula = ['sin(pi_*X1)+7*sin(pi_*X2)^2+0.1*(pi_*X3)^4*sin(pi_*X1)']
     model = ot.SymbolicFunction(['X1', 'X2', 'X3'], formula)
-    distribution = ot.ComposedDistribution([ot.Uniform(-1.0, 1.0)] * 3)
+    distribution = ot.JointDistribution([ot.Uniform(-1.0, 1.0)] * 3)
     ot.RandomGenerator.SetSeed(0)
     inputDesign = ot.SobolIndicesExperiment(distribution, nb_sim).generate()
     outputDesign = model(inputDesign)
@@ -87,11 +87,13 @@ def ishigami_with_openturns(dim, nb_parms, nb_sim, sensitivity_name, check_sensi
     for i in range(nb_sim):
         sample_A = inputDesign[i]
         sample_B = inputDesign[nb_sim + i]
-        sample = np.vstack(([outputDesign[i]], [outputDesign[nb_sim + i]]))
+        sample = np.vstack(
+            (np.full(dim, outputDesign[i][0]), np.full(dim, outputDesign[nb_sim + i][0]))
+        )
         for k in range(nb_parms):
             sample_Ck = copy.deepcopy(sample_A)  
             sample_Ck[k] = sample_B[k]
-            sample = np.append(sample, model(sample_Ck)[0])
+            sample = np.vstack((sample, np.full(dim, model(sample_Ck)[0])))
         
         if save_state is not None and i == save_state :
             state = sensitivity_instance.save_state()
@@ -103,4 +105,3 @@ def ishigami_with_openturns(dim, nb_parms, nb_sim, sensitivity_name, check_sensi
             check_sensitivity.collect(sample)
 
     return inputDesign, outputDesign, sensitivity_instance
-

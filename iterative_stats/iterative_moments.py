@@ -20,15 +20,15 @@ class IterativeMoments(AbstractIterativeStatistics):
 
     Parameters
     ----------
-    dim : int
-        Dimensionality of data.
     max_order : int
         Maximum moment order (1-4).
+    dim : int, optional
+        Dimensionality of data.
     state : StateDict, optional
         Previous state to restore.
     """
 
-    def __init__(self, dim: int, max_order: int, state: StateDict | None = None) -> None:
+    def __init__(self, max_order: int, dim: int = 1, state: StateDict | None = None) -> None:
         if not isinstance(max_order, int) or max_order < 1 or max_order > 4:
             raise ValueError("max_order must be an integer between 1 and 4")
 
@@ -59,7 +59,7 @@ class IterativeMoments(AbstractIterativeStatistics):
         data : NDArray[np.float64]
             New data point.
         """
-        data = np.asarray(data, dtype=np.float64)
+        data = np.atleast_1d(np.asarray(data, dtype=np.float64))
         if data.shape != self.m1.shape:
             raise ValueError(f"Expected shape {self.m1.shape}, got {data.shape}")
 

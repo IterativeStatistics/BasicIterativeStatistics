@@ -29,6 +29,5 @@ def multi_dim_dotproduct(
         d2_flat = data_2.ravel() if data_2.ndim > 1 else data_2
         return np.dot(d1_flat, d2_flat)
 
-    # For multi-dimensional case: vectorized dot products along last axis
-    # Faster than list comprehension with strided access
-    return np.einsum("ik,ik->i", data_1, data_2)
+    # Sum over samples, returning one dot product per data dimension.
+    return np.einsum("ik,ik->k", data_1, data_2)

@@ -73,7 +73,7 @@ class TestAbstractIterativeThreshold(unittest.TestCase):
         iterative_stats_ft = IterativeThreshold(dim=2, state=state)
 
         for x in sample[3:]:
-            iterative_stats.increment(x)
+            iterative_stats_ft.increment(x)
 
         res = np.allclose(gt,iterative_stats_ft.get_stats(), atol=10e-10)
         self.assertTrue(res)

@@ -145,13 +145,13 @@ class TestMeanShiftedIterativeStatistics(unittest.TestCase):
             self.assertTupleEqual(iterativeMean.get_stats().shape, (2,))
 
         state = iterativeMean.save_state()
-        iterativeMean_reload = IterativeShiftedMean(dim=1, state=state)
+        iterativeMean_reload = IterativeShiftedMean(dim=2, state=state)
 
         for x, shift in zip(sample[3:], shifted_sample[3:]) :
             iterativeMean_reload.increment(x, shift = shift)
             mu = np.mean(sample[:cpt+1] - shifted_sample[cpt], axis=0)
             logger.info(f'(reload) mu: {mu}, other={iterativeMean_reload.get_stats()}')
             cpt += 1
-            res = np.allclose(mu,iterativeMean.get_stats(), atol=10e-10)
+            res = np.allclose(mu,iterativeMean_reload.get_stats(), atol=10e-10)
             self.assertTrue(res)
             self.assertTupleEqual(iterativeMean.get_stats().shape, (2,))
