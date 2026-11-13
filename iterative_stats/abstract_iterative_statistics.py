@@ -1,49 +1,68 @@
-
 from abc import ABC, abstractmethod
-from typing import Dict
+from typing import TypedDict
+
 import numpy as np
+from numpy.typing import NDArray
+
+
+class StateDict(TypedDict, total=False):
+    """Type definition for saved state."""
+
+    iteration: int
+    state: NDArray[np.float64]
+
 
 class AbstractIterativeStatistics(ABC):
     """
-        A basic abstract class to compute iteratives statistics.
+    Base class for computing iterative statistics.
+
+    Parameters
+    ----------
+    dim : int
+        Dimensionality of the data.
+    state : StateDict, optional
+        Previous state to restore from.
     """
-    def __init__(self, dim:int, state: object = None):
+
+    def __init__(self, dim: int, state: StateDict | None = None) -> None:
         self.dimension = dim
-        if state is None :
-            self.state = np.zeros(dim)
+        if state is None:
+            self.state: NDArray[np.float64] = np.zeros(dim, dtype=np.float64)
             self.iteration = 0
-        else :
+        else:
             self.load_from_state(state)
-        
 
     @abstractmethod
-    def increment(self, data : np.array):
+    def increment(self, data: NDArray[np.float64]) -> None:
         """
-            An abstract method to implement. It must contain the algorithm to compute iteratively statistics.
-        """
-        raise Exception('Not implemented method')
-    
-    def save_state(self):
-        """
-            A method that save the current state.
-        """
-        return {'iteration': self.iteration, 'state': self.state}
+        Update statistics with new data point.
 
-    def load_from_state(self, state: object):
+        Parameters
+        ----------
+        data : NDArray[np.float64]
+            Input data matching the dimension.
         """
-            A method that load the current state
-        """
-        self.iteration = state.get('iteration', 0)
-        self.state = state.get('state', None)
 
-    def get_stats(self):
+    def save_state(self) -> StateDict:
+        """Save current state for later restoration."""
+        return {"iteration": self.iteration, "state": self.state.copy()}
+
+    def load_from_state(self, state: StateDict) -> None:
         """
-            A method that return the current state
+        Restore state from saved dictionary.
+
+        Parameters
+        ----------
+        state : StateDict
+            Dictionary with 'iteration' and 'state' keys.
         """
+        self.iteration = state.get("iteration", 0)
+        self.state = state.get("state", np.zeros(self.dimension, dtype=np.float64))
+
+    def get_stats(self) -> NDArray[np.float64]:
+        """Return current state."""
         return self.state
-    
-    def get_iteration(self):
-        """
-            A method that return the current iteration value
-        """
+
+    def get_iteration(self) -> int:
+        """Return current iteration count."""
         return self.iteration

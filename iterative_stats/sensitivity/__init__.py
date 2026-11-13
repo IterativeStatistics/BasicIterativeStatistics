@@ -1,4 +1,3 @@
-SALTELLI = 'Saltelli'
-MARTINEZ = 'Martinez'
-JANSEN = 'Jansen'
-
+SALTELLI = "Saltelli"
+MARTINEZ = "Martinez"
+JANSEN = "Jansen"
