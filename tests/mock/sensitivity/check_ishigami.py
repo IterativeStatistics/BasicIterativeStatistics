@@ -1,82 +1,102 @@
-import numpy as np
-from iterative_stats.utils.logger import logger
 import copy
 import time
 
+import numpy as np
+
+from iterative_stats.utils.logger import logger
+
+
 def check_ishigami(nb_parms, nb_sim, sensitivity_indices, check_sensitivity, second_order: bool = False):
-    from tests.mock.ishigami import ishigami 
+    from tests.mock.ishigami import ishigami
     from tests.mock.uniform_3d import Uniform3D
 
-    input_sample_generator = Uniform3D(nb_parms = nb_parms, nb_sim = nb_sim, second_order=second_order).generator()
+    input_sample_generator = Uniform3D(nb_parms=nb_parms, nb_sim=nb_sim, second_order=second_order).generator()
     cpt = 0
-    while True :
+    while True:
         # logger.info(f'___________Round {cpt}________________')
-        try :
-
+        try:
             input_sample = next(input_sample_generator)
-            output_sample = np.apply_along_axis(ishigami, 1,input_sample)
+            output_sample = np.apply_along_axis(ishigami, 1, input_sample)
             sensitivity_indices.increment(output_sample)
             check_sensitivity.collect(output_sample)
 
             _ = check_sensitivity.getSecondOrderIndices()
             _ = check_sensitivity.getFirstOrderIndices()
-        except StopIteration :
+        except StopIteration:
             # End of the test
-            break 
+            break
         cpt += 1
-        
-def check_ishigami_multi_dim(nb_parms, nb_sim, sensitivity_indices, 
-                                check_sensitivity : object = None, second_order: bool = False, 
-                                dim : int = 1, with_timer: list = []):
-    from tests.mock.ishigami import ishigami 
+
+
+def check_ishigami_multi_dim(
+    nb_parms,
+    nb_sim,
+    sensitivity_indices,
+    check_sensitivity: object = None,
+    second_order: bool = False,
+    dim: int = 1,
+    with_timer: list = [],
+):
+    from tests.mock.ishigami import ishigami
     from tests.mock.uniform_3d import Uniform3D
 
-    input_sample_generator = [Uniform3D(nb_parms = nb_parms, nb_sim = nb_sim, second_order=second_order).generator() for _ in range(dim)]
+    input_sample_generator = [
+        Uniform3D(nb_parms=nb_parms, nb_sim=nb_sim, second_order=second_order).generator() for _ in range(dim)
+    ]
     cpt = 0
 
     size_output = 2 + nb_parms
-    if second_order :
+    if second_order:
         size_output += nb_parms
-    while True :
+    while True:
         # logger.info(f'___________Round {cpt}________________')
-        try :
+        try:
             outputs = np.zeros((size_output, dim))
-            for i in range(dim) :
-                input_sample = next(input_sample_generator[i])                
-                outputs[:, i] = np.apply_along_axis(ishigami, 1,input_sample)
-                if check_sensitivity is not None :
-                    check_sensitivity[i].collect(copy.deepcopy(outputs[:,i]))
-            if len(with_timer) > 0 :
+            for i in range(dim):
+                input_sample = next(input_sample_generator[i])
+                outputs[:, i] = np.apply_along_axis(ishigami, 1, input_sample)
+                if check_sensitivity is not None:
+                    check_sensitivity[i].collect(copy.deepcopy(outputs[:, i]))
+            if len(with_timer) > 0:
                 tic = time.perf_counter()
                 sensitivity_indices.increment(outputs)
                 toc = time.perf_counter()
-                logger.info(f'Computation for a field of size {dim} {toc - tic:0.4f} seconds (n_sim = {nb_sim})')
-                with_timer[cpt] = toc-tic
-            else :
+                logger.info(f"Computation for a field of size {dim} {toc - tic:0.4f} seconds (n_sim = {nb_sim})")
+                with_timer[cpt] = toc - tic
+            else:
                 sensitivity_indices.increment(outputs)
             # logger.info(f' second order: {sensitivity_indices.getSecondOrderIndices()}')
-        except StopIteration :
+        except StopIteration:
             # End of the test
-            break 
+            break
         cpt += 1
 
-def ishigami_with_openturns(dim, nb_parms, nb_sim, sensitivity_name, check_sensitivity = None, save_state: int = None):
-    import openturns as ot
-    import copy 
-    
-    # Construct sensitivity_instance
-    from iterative_stats.sensitivity import SALTELLI, JANSEN, MARTINEZ
-    if sensitivity_name == MARTINEZ:
-        from iterative_stats.sensitivity.sensitivity_martinez import IterativeSensitivityMartinez as IterativeSensitivityMethod
-    elif sensitivity_name == JANSEN:
-        from iterative_stats.sensitivity.sensitivity_jansen import IterativeSensitivityJansen as IterativeSensitivityMethod
-    elif sensitivity_name ==  SALTELLI:
-        from iterative_stats.sensitivity.sensitivity_saltelli import IterativeSensitivitySaltelli as IterativeSensitivityMethod
 
-    sensitivity_instance = IterativeSensitivityMethod(dim = dim, nb_parms = nb_parms, second_order=False)
+def ishigami_with_openturns(dim, nb_parms, nb_sim, sensitivity_name, check_sensitivity=None, save_state: int = None):
+    import copy
+
+    import openturns as ot
+
+    # Construct sensitivity_instance
+    from iterative_stats.sensitivity import JANSEN, MARTINEZ, SALTELLI
+
+    if sensitivity_name == MARTINEZ:
+        from iterative_stats.sensitivity.sensitivity_martinez import (
+            IterativeSensitivityMartinez as IterativeSensitivityMethod,
+        )
+    elif sensitivity_name == JANSEN:
+        from iterative_stats.sensitivity.sensitivity_jansen import (
+            IterativeSensitivityJansen as IterativeSensitivityMethod,
+        )
+    elif sensitivity_name == SALTELLI:
+        from iterative_stats.sensitivity.sensitivity_saltelli import (
+            IterativeSensitivitySaltelli as IterativeSensitivityMethod,
+        )
+
+    sensitivity_instance = IterativeSensitivityMethod(dim=dim, nb_parms=nb_parms, second_order=False)
     # Create the model and input distribution
-    formula = ['sin(pi_*X1)+7*sin(pi_*X2)^2+0.1*(pi_*X3)^4*sin(pi_*X1)']
-    model = ot.SymbolicFunction(['X1', 'X2', 'X3'], formula)
+    formula = ["sin(pi_*X1)+7*sin(pi_*X2)^2+0.1*(pi_*X3)^4*sin(pi_*X1)"]
+    model = ot.SymbolicFunction(["X1", "X2", "X3"], formula)
     distribution = ot.JointDistribution([ot.Uniform(-1.0, 1.0)] * 3)
     ot.RandomGenerator.SetSeed(0)
     inputDesign = ot.SobolIndicesExperiment(distribution, nb_sim).generate()
@@ -87,21 +107,21 @@ def ishigami_with_openturns(dim, nb_parms, nb_sim, sensitivity_name, check_sensi
     for i in range(nb_sim):
         sample_A = inputDesign[i]
         sample_B = inputDesign[nb_sim + i]
-        sample = np.vstack(
-            (np.full(dim, outputDesign[i][0]), np.full(dim, outputDesign[nb_sim + i][0]))
-        )
+        sample = np.vstack((np.full(dim, outputDesign[i][0]), np.full(dim, outputDesign[nb_sim + i][0])))
         for k in range(nb_parms):
-            sample_Ck = copy.deepcopy(sample_A)  
+            sample_Ck = copy.deepcopy(sample_A)
             sample_Ck[k] = sample_B[k]
             sample = np.vstack((sample, np.full(dim, model(sample_Ck)[0])))
-        
-        if save_state is not None and i == save_state :
+
+        if save_state is not None and i == save_state:
             state = sensitivity_instance.save_state()
-            sensitivity_instance = IterativeSensitivityMethod(dim = dim, nb_parms = nb_parms, second_order=False, state=state)
-            logger.info(f'change instance')
-        logger.info(f'sensitivity_instance. {sensitivity_instance.getFirstOrderIndices()}')
+            sensitivity_instance = IterativeSensitivityMethod(
+                dim=dim, nb_parms=nb_parms, second_order=False, state=state
+            )
+            logger.info("change instance")
+        logger.info(f"sensitivity_instance. {sensitivity_instance.getFirstOrderIndices()}")
         sensitivity_instance.increment(sample)
-        if check_sensitivity is not None :
+        if check_sensitivity is not None:
             check_sensitivity.collect(sample)
 
     return inputDesign, outputDesign, sensitivity_instance
