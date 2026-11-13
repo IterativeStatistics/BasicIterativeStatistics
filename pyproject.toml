@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "iterative_stats"
-version = "0.1.2"
+version = "0.2.0"
 description = "This package implements iterative algorithms to compute some basics statistics"
 authors = ['Frederique Robin']
 readme = "README.md"
